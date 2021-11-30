@@ -1,0 +1,16 @@
+post:
+  tags:
+    - Event Notifications
+  summary: Оповестить о событии
+  operationId: notifyWebhookEvent
+  parameters:
+    - $ref: '#/parameters/signature'
+    - in: body
+      name: event
+      description: Данные произошедшего в системе события
+      required: true
+      schema:
+        $ref: '#/definitions/Event'
+  responses:
+    '200':
+      description: Оповещение обработано

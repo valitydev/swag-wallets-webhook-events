@@ -1,0 +1,9 @@
+description: Событие о начале осуществления вывода средств
+allOf:
+  - $ref: '#/definitions/Event'
+  - type: object
+    required:
+      - withdrawal
+    properties:
+      withdrawal:
+        $ref: '#/definitions/Withdrawal'

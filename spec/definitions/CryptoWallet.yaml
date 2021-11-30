@@ -1,0 +1,17 @@
+description: Данные криптовалютного кошелька
+allOf:
+  - $ref: '#/definitions/DestinationResource'
+  - type: object
+    required:
+      - cryptoWalletId
+      - currency
+    properties:
+      cryptoWalletId:
+        description: Идентификатор (он же адрес) криптовалютного кошелька
+        type: string
+        minLength: 16
+        maxLength: 256
+        example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
+      currency:
+        x-rebillyMerge:
+          - $ref: '#/definitions/CryptoCurrency'

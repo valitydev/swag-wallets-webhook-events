@@ -1,1 +1,1 @@
-# Empayre Wallets · Webhook Events API Specification
+# Vality Wallets · Webhook Events API Specification

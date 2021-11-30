@@ -1,0 +1,13 @@
+description: Смена статуса приемника на авторизованный
+allOf:
+  - $ref: '#/definitions/Event'
+  - type: object
+    required:
+      - destinationID
+    properties:
+      destinationID:
+        x-rebillyMerge:
+          - $ref: '#/definitions/DestinationID'
+      externalID:
+        x-rebillyMerge:
+          - $ref: '#/definitions/ExternalID'

@@ -1,0 +1,9 @@
+description: Событие создания приемника денежных средств
+allOf:
+  - $ref: '#/definitions/Event'
+  - type: object
+    required:
+      - destination
+    properties:
+      destination:
+        $ref: '#/definitions/Destination'
