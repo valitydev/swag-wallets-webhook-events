@@ -1,6 +1,6 @@
 description: Данные криптовалютного кошелька
 allOf:
-  - $ref: '#/definitions/DestinationResource'
+  - $ref: '../schemas/DestinationResource.yaml'
   - type: object
     required:
       - digitalWalletId

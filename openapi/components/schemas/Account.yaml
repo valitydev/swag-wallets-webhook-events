@@ -5,20 +5,16 @@ required:
   - identity
 properties:
   id:
-    x-rebillyMerge:
-      - $ref: '#/definitions/AccountID'
+    - $ref: '../schemas/AccountID.yaml'
   createdAt:
     description: Дата и время создания счета
     type: string
     format: date-time
 
   currency:
-    x-rebillyMerge:
-    - $ref: '#/definitions/CurrencyID'
+    - $ref: '../schemas/CurrencyID.yaml'
   identity:
-    x-rebillyMerge:
-      - $ref: '#/definitions/IdentityID'
+    - $ref: '../schemas/IdentityID.yaml'
   accountNumber:
-    x-rebillyMerge:
-      - $ref: '#/definitions/AccountNumber'
+    - $ref: '../schemas/AccountNumber.yaml'
 

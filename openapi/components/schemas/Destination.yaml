@@ -7,22 +7,19 @@ required:
   - resource
 properties:
   id:
-    x-rebillyMerge:
-      - $ref: '#/definitions/DestinationID'
-      - readOnly: true
+    - $ref: '../schemas/DestinationID.yaml'
+    - readOnly: true
   name:
     description: |
       Человекочитаемое название приёмника средств, по которому его легко узнать
     type: string
     example: Squarey plastic thingy
   identity:
-    x-rebillyMerge:
-      - $ref: '#/definitions/IdentityID'
+    - $ref: '../schemas/IdentityID.yaml'
   currency:
-    x-rebillyMerge:
-      - $ref: '#/definitions/CurrencyID'
+    - $ref: '../schemas/CurrencyID.yaml'
   resource:
-    $ref: '#/definitions/DestinationResource'
+    $ref: '../schemas/DestinationResource.yaml'
   metadata:
     description: |
       Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
@@ -31,5 +28,4 @@ properties:
     example:
       color_hint: olive-green
   externalID:
-    x-rebillyMerge:
-      - $ref: '#/definitions/ExternalID'
+    - $ref: '../schemas/ExternalID.yaml'

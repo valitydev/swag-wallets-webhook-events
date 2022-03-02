@@ -26,7 +26,7 @@ properties:
       - WithdrawalSucceeded
       - WithdrawalFailed
       - DestinationCreated
-      - DestinationAuthorized
+      - DestinationAuthorizedF
       - DestinationUnauthorized
 
 discriminator:

@@ -1,13 +1,11 @@
 description: Смена статуса приемника на не авторизованный
 allOf:
-  - $ref: '#/definitions/Event'
+  - $ref: '../schemas/Event.yaml'
   - type: object
     required:
       - destinationID
     properties:
       destinationID:
-        x-rebillyMerge:
-          - $ref: '#/definitions/DestinationID'
+        - $ref: '../schemas/DestinationID.yaml'
       externalID:
-        x-rebillyMerge:
-          - $ref: '#/definitions/ExternalID'
+        - $ref: '../schemas/ExternalID.yaml'

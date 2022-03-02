@@ -1,6 +1,6 @@
 description: Данные криптовалютного кошелька
 allOf:
-  - $ref: '#/definitions/DestinationResource'
+  - $ref: '../schemas/DestinationResource.yaml'
   - type: object
     required:
       - cryptoWalletId
@@ -13,5 +13,4 @@ allOf:
         maxLength: 256
         example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
       currency:
-        x-rebillyMerge:
-          - $ref: '#/definitions/CryptoCurrency'
+        - $ref: '../schemas/CryptoCurrency.yaml'
