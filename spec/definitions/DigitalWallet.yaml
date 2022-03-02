@@ -7,15 +7,13 @@ allOf:
       - digitalWalletProvider
     properties:
       digitalWalletId:
-        description: Идентификатор
+        description: Идентификатор кошелька
         type: string
         minLength: 16
         maxLength: 256
         example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
       digitalWalletProvider:
-        description: |
-          Идентификатор провайдера
+        description: Провайдер электронных денежных средств
         type: string
-        enum:
-          - webmoney
+        example: Paypal
 
