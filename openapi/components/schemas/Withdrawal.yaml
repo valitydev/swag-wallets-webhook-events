@@ -14,8 +14,8 @@ properties:
   destination:
     $ref: '../schemas/DestinationID.yaml'
   body:
-    - description: Объём средств, которые необходимо вывести
-    - $ref: '../schemas/Asset.yaml'
+    description: Объём средств, которые необходимо вывести
+    $ref: '../schemas/Asset.yaml'
   metadata:
     description: |
       Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
