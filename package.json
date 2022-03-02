@@ -1,28 +1,15 @@
 {
-  "name": "swag-wallets-webhook-openapi-spec",
-  "version": "0.0.1",
-  "dependencies": {
-    "bower": "^1.7.7",
-    "connect": "^3.4.1",
-    "cors": "^2.7.1",
-    "gulp-connect": "^4.2.0",
-    "gulp-util": "^3.0.8",
-    "json-merge-patch": "^0.2.3",
-    "npm": "^8.1.3",
-    "portfinder": "^1.0.3",
-    "shelljs": "^0.8.5",
-    "swagger-repo": "^1.5.1",
-    "swagger-ui": "^2.1.4"
-  },
+  "name": "swag-webhook-events",
+  "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "build": "node ./scripts/build.js",
-    "bundle-swagger-ui": "node ./scripts/bundle-swagger-ui.js",
-    "swagger": "swagger-repo",
-    "test": "swagger-repo validate",
-    "start": "gulp serve"
+  "dependencies": {
+    "@redocly/openapi-cli": "1.0.0-beta.81",
+    "json-merge-patch": "1.0.2",
+    "redoc-cli": "0.13.7"
   },
-  "devDependencies": {
-    "gulp": "github:gulpjs/gulp"
+  "scripts": {
+    "start": "openapi preview-docs",
+    "build": "openapi bundle -o web_deploy/openapi.yaml && openapi bundle -o web_deploy/openapi.json",
+    "validate": "openapi lint"
   }
 }

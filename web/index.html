@@ -1,35 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Vality Wallets · Webhook Events API</title>
-    <!-- Needed for adaptive design -->
-    <meta charset="utf-8" />
+    <!-- needed for adaptive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js">
-    </script>
-    <!-- ReDoc doesn't change outer page styles -->
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!--
+    ReDoc uses font options from the parent element
+    So override default browser styles
+    -->
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
+        body {
+            margin: 0;
+            padding: 0;
+        }
     </style>
-  </head>
-  <body>
-    <div id='redoc'></div>
-    <script type="text/javascript">
-      Redoc.init(
-          "./swagger.json",
-          {
-              theme: {
-                  breakpoints: {
-                      // 3-panel view fix
-                      medium: '75rem'
-                  }
-              }
-          },
-          document.getElementById('redoc')
-      );
-    </script>
-  </body>
+    {{{redocHead}}}
+</head>
+<body>
+{{{redocHTML}}}
+</body>
 </html>
