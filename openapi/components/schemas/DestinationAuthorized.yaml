@@ -6,6 +6,6 @@ allOf:
       - destinationID
     properties:
       destinationID:
-        - $ref: '../schemas/DestinationID.yaml'
+        $ref: '../schemas/DestinationID.yaml'
       externalID:
-        - $ref: '../schemas/ExternalID.yaml'
+        $ref: '../schemas/ExternalID.yaml'

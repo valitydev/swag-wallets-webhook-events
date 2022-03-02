@@ -13,4 +13,4 @@ allOf:
         maxLength: 256
         example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
       currency:
-        - $ref: '../schemas/CryptoCurrency.yaml'
+        $ref: '../schemas/CryptoCurrency.yaml'

@@ -6,6 +6,6 @@ allOf:
       - withdrawalID
     properties:
       withdrawalID:
-        - $ref: '../schemas/WithdrawalID.yaml'
+        $ref: '../schemas/WithdrawalID.yaml'
       externalID:
-        - $ref: '../schemas/ExternalID.yaml'
+        $ref: '../schemas/ExternalID.yaml'

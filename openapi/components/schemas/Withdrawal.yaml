@@ -6,13 +6,13 @@ required:
       - body
 properties:
   id:
-    - $ref: '../schemas/WithdrawalID.yaml'
+    $ref: '../schemas/WithdrawalID.yaml'
   createdAt:
     description: Дата и время запуска вывода
     type: string
     format: date-time
   destination:
-    - $ref: '../schemas/DestinationID.yaml'
+    $ref: '../schemas/DestinationID.yaml'
   body:
     - description: Объём средств, которые необходимо вывести
     - $ref: '../schemas/Asset.yaml'
@@ -21,6 +21,6 @@ properties:
       Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
       данным выводом
   wallet:
-    - $ref: '../schemas/WalletID.yaml'
+    $ref: '../schemas/WalletID.yaml'
   externalID:
-    - $ref: '../schemas/ExternalID.yaml'
+    $ref: '../schemas/ExternalID.yaml'

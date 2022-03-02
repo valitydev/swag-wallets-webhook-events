@@ -15,9 +15,9 @@ properties:
     type: string
     example: Squarey plastic thingy
   identity:
-    - $ref: '../schemas/IdentityID.yaml'
+    $ref: '../schemas/IdentityID.yaml'
   currency:
-    - $ref: '../schemas/CurrencyID.yaml'
+    $ref: '../schemas/CurrencyID.yaml'
   resource:
     $ref: '../schemas/DestinationResource.yaml'
   metadata:
@@ -28,4 +28,4 @@ properties:
     example:
       color_hint: olive-green
   externalID:
-    - $ref: '../schemas/ExternalID.yaml'
+    $ref: '../schemas/ExternalID.yaml'
