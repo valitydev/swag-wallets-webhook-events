@@ -1,0 +1,14 @@
+# See https://docs.redoc.ly/cli/configuration/ for more information.
+apiDefinitions:
+  core: 'openapi/openapi.yaml'
+lint:
+  extends:
+    - recommended
+  rules:
+    tag-description: off
+referenceDocs:
+  showConsole: true
+  layout:
+    scope: section
+  routingStrategy: browser
+  htmlTemplate: ./web/index.html

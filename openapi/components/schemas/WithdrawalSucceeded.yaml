@@ -1,13 +1,11 @@
 description: Событие об успешном осуществлении вывода средств
 allOf:
-  - $ref: '#/definitions/Event'
+  - $ref: '../schemas/Event.yaml'
   - type: object
     required:
       - withdrawalID
     properties:
       withdrawalID:
-        x-rebillyMerge:
-          - $ref: '#/definitions/WithdrawalID'
+        $ref: '../schemas/WithdrawalID.yaml'
       externalID:
-        x-rebillyMerge:
-          - $ref: '#/definitions/ExternalID'
+        $ref: '../schemas/ExternalID.yaml'

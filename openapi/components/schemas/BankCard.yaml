@@ -1,6 +1,6 @@
 description: Данные банковской карты
 allOf:
-  - $ref: '#/definitions/DestinationResource'
+  - $ref: '../schemas/DestinationResource.yaml'
   - type: object
     required:
       - cardNumberMask
@@ -19,8 +19,6 @@ allOf:
         type: string
         pattern: '^\d{2,4}$'
       paymentSystem:
-        x-rebillyMerge:
-          - $ref: '#/definitions/BankCardPaymentSystem'
+        $ref: '../schemas/BankCardPaymentSystem.yaml'
       tokenProvider:
-        x-rebillyMerge:
-          - $ref: '#/definitions/BankCardTokenProvider'
+        $ref: '../schemas/BankCardTokenProvider.yaml'

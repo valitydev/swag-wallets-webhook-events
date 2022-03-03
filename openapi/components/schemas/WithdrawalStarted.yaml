@@ -1,9 +1,9 @@
 description: Событие о начале осуществления вывода средств
 allOf:
-  - $ref: '#/definitions/Event'
+  - $ref: '../schemas/Event.yaml'
   - type: object
     required:
       - withdrawal
     properties:
       withdrawal:
-        $ref: '#/definitions/Withdrawal'
+        $ref: '../schemas/Withdrawal.yaml'

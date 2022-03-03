@@ -1,8 +1,11 @@
-swagger: '2.0'
+openapi: 3.0.0
 info:
-  version: '0.1.0'
-  title: Vality Wallets · Webhook Events API
-  termsOfService: 'https://vality.dev/'
+  version: 0.1.0
+  title: Vality Wallets. Webhooks Events API
+  termsOfService: https://vality.dev/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   description: |
 
     ## Wallet Webhook Events API
@@ -75,22 +78,12 @@ info:
 
     Набор атрибутов заголовка и список возможных алгоритмов формирования подписи
     в дальнейшем могут быть расширены.
-
-schemes:
-  - https
-consumes:
-  - application/json; charset=utf-8
-produces:
-  - application/json; charset=utf-8
-parameters:
-  signature:
-    name: Content-Signature
-    in: header
-    description: >
-      Подпись сообщения, сформированная согласно указанным выше правилам
-    required: true
-    type: string
+servers:
+  - url: 'https://merchant.site'
 tags:
   - name: Event Notifications
     x-displayName: Оповещения
     description: Доставка оповещений о событиях системы.
+paths:
+  '/webhook':
+    $ref: './paths/webhook-url.yaml'

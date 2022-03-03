@@ -6,26 +6,20 @@ required:
       - body
 properties:
   id:
-    x-rebillyMerge:
-      - $ref: '#/definitions/WithdrawalID'
+    $ref: '../schemas/WithdrawalID.yaml'
   createdAt:
     description: Дата и время запуска вывода
     type: string
     format: date-time
   destination:
-    x-rebillyMerge:
-      - $ref: '#/definitions/DestinationID'
+    $ref: '../schemas/DestinationID.yaml'
   body:
-    x-rebillyMerge:
-      - description: Объём средств, которые необходимо вывести
-      - $ref: '#/definitions/Asset'
+    $ref: '../schemas/Asset.yaml'
   metadata:
     description: |
       Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
       данным выводом
   wallet:
-    x-rebillyMerge:
-      - $ref: '#/definitions/WalletID'
+    $ref: '../schemas/WalletID.yaml'
   externalID:
-    x-rebillyMerge:
-      - $ref: '#/definitions/ExternalID'
+    $ref: '../schemas/ExternalID.yaml'

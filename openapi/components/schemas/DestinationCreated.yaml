@@ -1,9 +1,9 @@
 description: Событие создания приемника денежных средств
 allOf:
-  - $ref: '#/definitions/Event'
+  - $ref: '../schemas/Event.yaml'
   - type: object
     required:
       - destination
     properties:
       destination:
-        $ref: '#/definitions/Destination'
+        $ref: '../schemas/Destination.yaml'

@@ -1,6 +1,5 @@
 description: Ресурс приёмника денежных средств, используемый для осуществления выводов
 type: object
-discriminator: type
 required:
   - type
 properties:
@@ -12,3 +11,10 @@ properties:
       - BankCard
       - CryptoWallet
       - DigitalWallet
+
+discriminator:
+  propertyName: type
+  mapping:
+    'BankCard': '../schemas/BankCard.yaml'
+    'CryptoWallet': '../schemas/CryptoWallet.yaml'
+    'DigitalWallet': '../schemas/DigitalWallet.yaml'

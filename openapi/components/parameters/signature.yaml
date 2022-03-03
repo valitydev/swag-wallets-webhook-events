@@ -1,0 +1,7 @@
+name: Content-Signature
+in: header
+description: >
+  Подпись сообщения, сформированная согласно указанным выше правилам
+required: true
+schema:
+  type: string
