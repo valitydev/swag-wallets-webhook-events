@@ -14,7 +14,6 @@ properties:
   destination:
     $ref: '../schemas/DestinationID.yaml'
   body:
-    description: Объём средств, которые необходимо вывести
     $ref: '../schemas/Asset.yaml'
   metadata:
     description: |

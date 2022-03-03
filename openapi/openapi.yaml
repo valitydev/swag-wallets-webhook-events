@@ -3,9 +3,6 @@ info:
   version: 2.0.0
   title: Vality Wallets. Webhooks Events API
   termsOfService: https://vality.dev/
-  contact:
-    name: Vality support team
-    email: support@vality.dev
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html

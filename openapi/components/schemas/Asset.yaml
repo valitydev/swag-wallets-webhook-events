@@ -1,5 +1,5 @@
 description: |
-  Объём денежных средств
+  Объём средств, которые необходимо вывести
 type: object
 required:
   - amount

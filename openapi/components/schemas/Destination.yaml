@@ -8,7 +8,6 @@ required:
 properties:
   id:
     $ref: '../schemas/DestinationID.yaml'
-    readOnly: true
   name:
     description: |
       Человекочитаемое название приёмника средств, по которому его легко узнать
