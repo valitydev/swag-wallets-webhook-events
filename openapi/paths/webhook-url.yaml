@@ -15,5 +15,3 @@ post:
   responses:
     '200':
       description: Оповещение обработано
-    '404':
-      $ref: '../components/responses/NotFound.yaml'
