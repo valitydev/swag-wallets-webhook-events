@@ -14,7 +14,7 @@ properties:
   destination:
     $ref: '../schemas/DestinationID.yaml'
   body:
-    $ref: '../schemas/Asset.yaml'
+    $ref: '../schemas/WithdrawalBody.yaml'
   metadata:
     description: |
       Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
