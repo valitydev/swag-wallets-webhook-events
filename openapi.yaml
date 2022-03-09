@@ -1,0 +1,490 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Vality Wallets. Webhooks Events API
+  termsOfService: https://vality.dev/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  description: >
+
+    ## Wallet Webhook Events API
+
+
+    Данная спецификация определяет протокол доставки оповещений о возникновении
+
+    новых событий по кошелькам в рамках вашей организации, которые система
+    доставляет в
+
+    виде HTTP-запросов на URL-адреса созданных вами webhook'ов. Обработчики для
+
+    подобного рода запросов необходимо реализовать на стороне вашего серверного
+
+    кода согласно данной спецификации.
+
+
+    Webhook — это подписка на определенный тип события либо их группу,
+
+    касающихся различных объектов в рамках вашей организации. Для управления
+
+    webhook'ами используются методы API, описанные в спецификации
+
+    [Vality Webhook Management API](https://github.com/valitydev/swag-wallets).
+
+    Когда наступает одно из событий в рамках определенного кошелька (например,
+
+    изменение статуса кошелька), система выбирает
+
+    webhook, подходящий под этот тип события, и отправляет HTTP-запрос,
+
+    содержащий сообщение в формате JSON на указанный в этом webhook'е URL. Если
+
+    вы создали несколько webhook'ов, подходящих под этот тип события, то событие
+
+    доставляется одновременно на все заданные в них URL в неопределённом
+
+    порядке.
+
+
+    ## Стратегия доставки
+
+
+    Система гарантирует порядок доставки событий в рамках определенного предмета
+    оповещения
+
+    (кошелек, пополнение, выплата и т.п.). Система поддерживает очередь
+    сообщений для каждого
+
+    предмета оповещения, чтобы соблюсти очередность и гарантированную доставку.
+
+
+    Запрос на доставку считается успешным только при получении ответа со
+
+    статусом `200`. Система будет ожидать успешного ответа на отправленный
+
+    запрос в течение 10 секунд. В случае ответа любым другим статусом или по
+
+    истечении указанного времени, отведённого на обработку оповещения, система
+
+    будет пытаться повторно доставить оповещения до получения успешного ответа,
+
+    либо до принятия решения о невозможности доставить информацию. Попытки
+
+    доставки будут производиться со следующими временными интервалами между
+
+    запросами:
+
+      - 30 секунд,
+      - 5 минут,
+      - 15 минут,
+      - 1 час.
+      - каждый час в течение суток (24 часа)
+
+    Если последняя попытка доставить оповещение оканчивается неудачей, все
+    события, которые
+
+    накопились в очереди этого кошелька, отбрасываются.
+
+
+    ## Авторизация полученных сообщений
+
+
+    Система подтверждает подлинность оповещений, подписывая сообщения
+
+    приватным ключом, уникальным для каждого webhook'а, парный публичный ключ к
+
+    которому содержится в данных этого webhook'а. Подпись передается в
+
+    HTTP-заголовке `Content-Signature`. В заголовке в виде различных атрибутов
+
+    содержится информация об использованном при формировании подписи алгоритме и
+
+    значение подписи в формате
+
+    [URL-safe base-64](https://tools.ietf.org/html/rfc4648).
+
+
+    ```
+
+    Content-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo...
+
+    ```
+
+
+    На данный момент возможно использование единственного алоритма формирования
+
+    подписи.
+
+
+    ### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)
+
+
+    Подпись формируется согласно алгоритму
+
+    [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2), на
+
+    вход которому подаётся результат вычисления хэша сообщения по алгоритму
+
+    [SHA-256](https://tools.ietf.org/html/rfc6234).
+
+
+    Набор атрибутов заголовка и список возможных алгоритмов формирования подписи
+
+    в дальнейшем могут быть расширены.
+servers:
+  - url: https://merchant.site
+tags:
+  - name: Event Notifications
+    x-displayName: Оповещения
+    description: Доставка оповещений о событиях системы.
+paths:
+  /webhook:
+    post:
+      tags:
+        - Event Notifications
+      summary: Оповестить о событии
+      operationId: notifyWebhookEvent
+      parameters:
+        - $ref: '#/components/parameters/signature'
+      requestBody:
+        description: Данные произошедшего в платформе события
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '200':
+          description: Оповещение обработано
+components:
+  parameters:
+    signature:
+      name: Content-Signature
+      in: header
+      description: |
+        Подпись сообщения, сформированная согласно указанным выше правилам
+      required: true
+      schema:
+        type: string
+  schemas:
+    Event:
+      description: Данные события
+      type: object
+      required:
+        - occuredAt
+        - topic
+        - eventType
+      properties:
+        eventID:
+          description: Идентификатор события в системе
+          type: string
+        occuredAt:
+          description: Дата и время возникновения события
+          type: string
+          format: date-time
+        topic:
+          description: Предмет оповещения
+          type: string
+          enum:
+            - WithdrawalTopic
+            - DestinationTopic
+        eventType:
+          type: string
+          description: Тип произошедшего с предметом оповещения события
+          enum:
+            - WithdrawalStarted
+            - WithdrawalSucceeded
+            - WithdrawalFailed
+            - DestinationCreated
+            - DestinationAuthorized
+            - DestinationUnauthorized
+      discriminator:
+        propertyName: eventType
+        mapping:
+          WithdrawalStarted: '#/components/schemas/WithdrawalStarted'
+          WithdrawalSucceeded: '#/components/schemas/WithdrawalSucceeded'
+          WithdrawalFailed: '#/components/schemas/WithdrawalFailed'
+          DestinationCreated: '#/components/schemas/DestinationCreated'
+          DestinationAuthorized: '#/components/schemas/DestinationAuthorized'
+          DestinationUnauthorized: '#/components/schemas/DestinationUnauthorized'
+    WithdrawalID:
+      description: Идентификатор вывода денежных средств
+      type: string
+      example: tZ0jUmlsV0
+    DestinationID:
+      description: Идентификатор места назначения денежных средств
+      type: string
+      example: 10ASF74D98
+    CurrencyID:
+      description: |
+        Валюта, символьный код согласно [ISO
+        4217](http://www.iso.org/iso/home/standards/currency_codes.htm).
+      type: string
+      pattern: ^[A-Z]{3}$
+      example: RUB
+    WithdrawalBody:
+      description: |
+        Объём средств, которые необходимо вывести
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          description: |
+            Сумма денежных средств в минорных единицах, например, в копейках
+          type: integer
+          format: int64
+          example: 1430000
+        currency:
+          $ref: '#/components/schemas/CurrencyID'
+    WalletID:
+      description: Идентификатор кошелька
+      type: string
+      example: '10068321'
+    ExternalID:
+      description: >
+        Уникальный идентификатор сущности на вашей стороне.
+
+
+        При указании будет использован для того, чтобы гарантировать
+        идемпотентную обработку операции.
+      type: string
+      example: '10036274'
+    Withdrawal:
+      description: Данные вывода денежных средств
+      type: object
+      required:
+        - wallet
+        - destination
+        - body
+      properties:
+        id:
+          $ref: '#/components/schemas/WithdrawalID'
+        createdAt:
+          description: Дата и время запуска вывода
+          type: string
+          format: date-time
+        destination:
+          $ref: '#/components/schemas/DestinationID'
+        body:
+          $ref: '#/components/schemas/WithdrawalBody'
+        metadata:
+          description: >
+            Произвольный, специфичный для клиента API и непрозрачный для системы
+            набор данных, ассоциированных с
+
+            данным выводом
+        wallet:
+          $ref: '#/components/schemas/WalletID'
+        externalID:
+          $ref: '#/components/schemas/ExternalID'
+    WithdrawalStarted:
+      description: Событие о начале осуществления вывода средств
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawal
+          properties:
+            withdrawal:
+              $ref: '#/components/schemas/Withdrawal'
+    WithdrawalSucceeded:
+      description: Событие об успешном осуществлении вывода средств
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawalID
+          properties:
+            withdrawalID:
+              $ref: '#/components/schemas/WithdrawalID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'
+    WithdrawalFailed:
+      description: Событие о неуспешном осуществлении вывода средств
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawalID
+          properties:
+            withdrawalID:
+              $ref: '#/components/schemas/WithdrawalID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'
+    IdentityID:
+      description: Идентификатор личности владельца кошелька
+      type: string
+      example: tZ0jUmlsV0
+    DestinationResource:
+      description: >-
+        Ресурс приёмника денежных средств, используемый для осуществления
+        выводов
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          description: |
+            Тип ресурса приёмника средств.
+          type: string
+          enum:
+            - BankCard
+            - CryptoWallet
+            - DigitalWallet
+      discriminator:
+        propertyName: type
+        mapping:
+          BankCard: '#/components/schemas/BankCard'
+          CryptoWallet: '#/components/schemas/CryptoWallet'
+          DigitalWallet: '#/components/schemas/DigitalWallet'
+    BankCardPaymentSystem:
+      description: Платежная система
+      type: string
+    BankCardTokenProvider:
+      description: Провайдер платежных токенов
+      type: string
+      enum:
+        - applepay
+        - googlepay
+        - samsungpay
+    BankCard:
+      description: Данные банковской карты
+      allOf:
+        - $ref: '#/components/schemas/DestinationResource'
+        - type: object
+          required:
+            - cardNumberMask
+            - paymentSystem
+          properties:
+            cardNumberMask:
+              description: Маскированый номер карты
+              type: string
+              pattern: ^\d{6,8}\*+\d{2,4}$
+            bin:
+              description: BIN банка-эмитента карты
+              type: string
+              pattern: ^\d{6,8}$
+            lastDigits:
+              description: Последние цифры номера карты
+              type: string
+              pattern: ^\d{2,4}$
+            paymentSystem:
+              $ref: '#/components/schemas/BankCardPaymentSystem'
+            tokenProvider:
+              $ref: '#/components/schemas/BankCardTokenProvider'
+    CryptoCurrency:
+      description: Криптовалюта
+      type: string
+      enum:
+        - Bitcoin
+        - Litecoin
+        - BitcoinCash
+        - Ripple
+        - Ethereum
+        - Zcash
+    CryptoWallet:
+      description: Данные криптовалютного кошелька
+      allOf:
+        - $ref: '#/components/schemas/DestinationResource'
+        - type: object
+          required:
+            - cryptoWalletId
+            - currency
+          properties:
+            cryptoWalletId:
+              description: Идентификатор (он же адрес) криптовалютного кошелька
+              type: string
+              minLength: 16
+              maxLength: 256
+              example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
+            currency:
+              $ref: '#/components/schemas/CryptoCurrency'
+    DigitalWallet:
+      description: Данные криптовалютного кошелька
+      allOf:
+        - $ref: '#/components/schemas/DestinationResource'
+        - type: object
+          required:
+            - digitalWalletId
+            - digitalWalletProvider
+          properties:
+            digitalWalletId:
+              description: Идентификатор кошелька
+              type: string
+              minLength: 16
+              maxLength: 256
+              example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
+            digitalWalletProvider:
+              description: Провайдер электронных денежных средств
+              type: string
+              example: Paypal
+    Destination:
+      description: Данные приемника денежных средств
+      type: object
+      required:
+        - name
+        - identity
+        - currency
+        - resource
+      properties:
+        id:
+          $ref: '#/components/schemas/DestinationID'
+        name:
+          description: >
+            Человекочитаемое название приёмника средств, по которому его легко
+            узнать
+          type: string
+          example: Squarey plastic thingy
+        identity:
+          $ref: '#/components/schemas/IdentityID'
+        currency:
+          $ref: '#/components/schemas/CurrencyID'
+        resource:
+          $ref: '#/components/schemas/DestinationResource'
+        metadata:
+          description: >
+            Произвольный, специфичный для клиента API и непрозрачный для системы
+            набор данных, ассоциированных с
+
+            данным приёмником
+          type: object
+          example:
+            color_hint: olive-green
+        externalID:
+          $ref: '#/components/schemas/ExternalID'
+    DestinationCreated:
+      description: Событие создания приемника денежных средств
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - destination
+          properties:
+            destination:
+              $ref: '#/components/schemas/Destination'
+    DestinationAuthorized:
+      description: Смена статуса приемника на авторизованный
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - destinationID
+          properties:
+            destinationID:
+              $ref: '#/components/schemas/DestinationID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'
+    DestinationUnauthorized:
+      description: Смена статуса приемника на не авторизованный
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - destinationID
+          properties:
+            destinationID:
+              $ref: '#/components/schemas/DestinationID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'

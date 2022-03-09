@@ -1,0 +1,517 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "0.1.0",
+    "title": "Vality Wallets. Webhooks Events API",
+    "termsOfService": "https://vality.dev/",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "description": "\n## Wallet Webhook Events API\n\nДанная спецификация определяет протокол доставки оповещений о возникновении\nновых событий по кошелькам в рамках вашей организации, которые система доставляет в\nвиде HTTP-запросов на URL-адреса созданных вами webhook'ов. Обработчики для\nподобного рода запросов необходимо реализовать на стороне вашего серверного\nкода согласно данной спецификации.\n\nWebhook — это подписка на определенный тип события либо их группу,\nкасающихся различных объектов в рамках вашей организации. Для управления\nwebhook'ами используются методы API, описанные в спецификации\n[Vality Webhook Management API](https://github.com/valitydev/swag-wallets).\nКогда наступает одно из событий в рамках определенного кошелька (например,\nизменение статуса кошелька), система выбирает\nwebhook, подходящий под этот тип события, и отправляет HTTP-запрос,\nсодержащий сообщение в формате JSON на указанный в этом webhook'е URL. Если\nвы создали несколько webhook'ов, подходящих под этот тип события, то событие\nдоставляется одновременно на все заданные в них URL в неопределённом\nпорядке.\n\n## Стратегия доставки\n\nСистема гарантирует порядок доставки событий в рамках определенного предмета оповещения\n(кошелек, пополнение, выплата и т.п.). Система поддерживает очередь сообщений для каждого\nпредмета оповещения, чтобы соблюсти очередность и гарантированную доставку.\n\nЗапрос на доставку считается успешным только при получении ответа со\nстатусом `200`. Система будет ожидать успешного ответа на отправленный\nзапрос в течение 10 секунд. В случае ответа любым другим статусом или по\nистечении указанного времени, отведённого на обработку оповещения, система\nбудет пытаться повторно доставить оповещения до получения успешного ответа,\nлибо до принятия решения о невозможности доставить информацию. Попытки\nдоставки будут производиться со следующими временными интервалами между\nзапросами:\n\n  - 30 секунд,\n  - 5 минут,\n  - 15 минут,\n  - 1 час.\n  - каждый час в течение суток (24 часа)\n\nЕсли последняя попытка доставить оповещение оканчивается неудачей, все события, которые\nнакопились в очереди этого кошелька, отбрасываются.\n\n## Авторизация полученных сообщений\n\nСистема подтверждает подлинность оповещений, подписывая сообщения\nприватным ключом, уникальным для каждого webhook'а, парный публичный ключ к\nкоторому содержится в данных этого webhook'а. Подпись передается в\nHTTP-заголовке `Content-Signature`. В заголовке в виде различных атрибутов\nсодержится информация об использованном при формировании подписи алгоритме и\nзначение подписи в формате\n[URL-safe base-64](https://tools.ietf.org/html/rfc4648).\n\n```\nContent-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo...\n```\n\nНа данный момент возможно использование единственного алоритма формирования\nподписи.\n\n### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)\n\nПодпись формируется согласно алгоритму\n[RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2), на\nвход которому подаётся результат вычисления хэша сообщения по алгоритму\n[SHA-256](https://tools.ietf.org/html/rfc6234).\n\nНабор атрибутов заголовка и список возможных алгоритмов формирования подписи\nв дальнейшем могут быть расширены.\n"
+  },
+  "servers": [
+    {
+      "url": "https://merchant.site"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Event Notifications",
+      "x-displayName": "Оповещения",
+      "description": "Доставка оповещений о событиях системы."
+    }
+  ],
+  "paths": {
+    "/webhook": {
+      "post": {
+        "tags": [
+          "Event Notifications"
+        ],
+        "summary": "Оповестить о событии",
+        "operationId": "notifyWebhookEvent",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/signature"
+          }
+        ],
+        "requestBody": {
+          "description": "Данные произошедшего в платформе события",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Event"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Оповещение обработано"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "signature": {
+        "name": "Content-Signature",
+        "in": "header",
+        "description": "Подпись сообщения, сформированная согласно указанным выше правилам\n",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "Event": {
+        "description": "Данные события",
+        "type": "object",
+        "required": [
+          "occuredAt",
+          "topic",
+          "eventType"
+        ],
+        "properties": {
+          "eventID": {
+            "description": "Идентификатор события в системе",
+            "type": "string"
+          },
+          "occuredAt": {
+            "description": "Дата и время возникновения события",
+            "type": "string",
+            "format": "date-time"
+          },
+          "topic": {
+            "description": "Предмет оповещения",
+            "type": "string",
+            "enum": [
+              "WithdrawalTopic",
+              "DestinationTopic"
+            ]
+          },
+          "eventType": {
+            "type": "string",
+            "description": "Тип произошедшего с предметом оповещения события",
+            "enum": [
+              "WithdrawalStarted",
+              "WithdrawalSucceeded",
+              "WithdrawalFailed",
+              "DestinationCreated",
+              "DestinationAuthorized",
+              "DestinationUnauthorized"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "eventType",
+          "mapping": {
+            "WithdrawalStarted": "#/components/schemas/WithdrawalStarted",
+            "WithdrawalSucceeded": "#/components/schemas/WithdrawalSucceeded",
+            "WithdrawalFailed": "#/components/schemas/WithdrawalFailed",
+            "DestinationCreated": "#/components/schemas/DestinationCreated",
+            "DestinationAuthorized": "#/components/schemas/DestinationAuthorized",
+            "DestinationUnauthorized": "#/components/schemas/DestinationUnauthorized"
+          }
+        }
+      },
+      "WithdrawalID": {
+        "description": "Идентификатор вывода денежных средств",
+        "type": "string",
+        "example": "tZ0jUmlsV0"
+      },
+      "DestinationID": {
+        "description": "Идентификатор места назначения денежных средств",
+        "type": "string",
+        "example": "10ASF74D98"
+      },
+      "CurrencyID": {
+        "description": "Валюта, символьный код согласно [ISO\n4217](http://www.iso.org/iso/home/standards/currency_codes.htm).\n",
+        "type": "string",
+        "pattern": "^[A-Z]{3}$",
+        "example": "RUB"
+      },
+      "WithdrawalBody": {
+        "description": "Объём средств, которые необходимо вывести\n",
+        "type": "object",
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "properties": {
+          "amount": {
+            "description": "Сумма денежных средств в минорных единицах, например, в копейках\n",
+            "type": "integer",
+            "format": "int64",
+            "example": 1430000
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyID"
+          }
+        }
+      },
+      "WalletID": {
+        "description": "Идентификатор кошелька",
+        "type": "string",
+        "example": "10068321"
+      },
+      "ExternalID": {
+        "description": "Уникальный идентификатор сущности на вашей стороне.\n\nПри указании будет использован для того, чтобы гарантировать идемпотентную обработку операции.\n",
+        "type": "string",
+        "example": "10036274"
+      },
+      "Withdrawal": {
+        "description": "Данные вывода денежных средств",
+        "type": "object",
+        "required": [
+          "wallet",
+          "destination",
+          "body"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WithdrawalID"
+          },
+          "createdAt": {
+            "description": "Дата и время запуска вывода",
+            "type": "string",
+            "format": "date-time"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/DestinationID"
+          },
+          "body": {
+            "$ref": "#/components/schemas/WithdrawalBody"
+          },
+          "metadata": {
+            "description": "Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с\nданным выводом\n"
+          },
+          "wallet": {
+            "$ref": "#/components/schemas/WalletID"
+          },
+          "externalID": {
+            "$ref": "#/components/schemas/ExternalID"
+          }
+        }
+      },
+      "WithdrawalStarted": {
+        "description": "Событие о начале осуществления вывода средств",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Event"
+          },
+          {
+            "type": "object",
+            "required": [
+              "withdrawal"
+            ],
+            "properties": {
+              "withdrawal": {
+                "$ref": "#/components/schemas/Withdrawal"
+              }
+            }
+          }
+        ]
+      },
+      "WithdrawalSucceeded": {
+        "description": "Событие об успешном осуществлении вывода средств",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Event"
+          },
+          {
+            "type": "object",
+            "required": [
+              "withdrawalID"
+            ],
+            "properties": {
+              "withdrawalID": {
+                "$ref": "#/components/schemas/WithdrawalID"
+              },
+              "externalID": {
+                "$ref": "#/components/schemas/ExternalID"
+              }
+            }
+          }
+        ]
+      },
+      "WithdrawalFailed": {
+        "description": "Событие о неуспешном осуществлении вывода средств",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Event"
+          },
+          {
+            "type": "object",
+            "required": [
+              "withdrawalID"
+            ],
+            "properties": {
+              "withdrawalID": {
+                "$ref": "#/components/schemas/WithdrawalID"
+              },
+              "externalID": {
+                "$ref": "#/components/schemas/ExternalID"
+              }
+            }
+          }
+        ]
+      },
+      "IdentityID": {
+        "description": "Идентификатор личности владельца кошелька",
+        "type": "string",
+        "example": "tZ0jUmlsV0"
+      },
+      "DestinationResource": {
+        "description": "Ресурс приёмника денежных средств, используемый для осуществления выводов",
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "description": "Тип ресурса приёмника средств.\n",
+            "type": "string",
+            "enum": [
+              "BankCard",
+              "CryptoWallet",
+              "DigitalWallet"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "BankCard": "#/components/schemas/BankCard",
+            "CryptoWallet": "#/components/schemas/CryptoWallet",
+            "DigitalWallet": "#/components/schemas/DigitalWallet"
+          }
+        }
+      },
+      "BankCardPaymentSystem": {
+        "description": "Платежная система",
+        "type": "string"
+      },
+      "BankCardTokenProvider": {
+        "description": "Провайдер платежных токенов",
+        "type": "string",
+        "enum": [
+          "applepay",
+          "googlepay",
+          "samsungpay"
+        ]
+      },
+      "BankCard": {
+        "description": "Данные банковской карты",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DestinationResource"
+          },
+          {
+            "type": "object",
+            "required": [
+              "cardNumberMask",
+              "paymentSystem"
+            ],
+            "properties": {
+              "cardNumberMask": {
+                "description": "Маскированый номер карты",
+                "type": "string",
+                "pattern": "^\\d{6,8}\\*+\\d{2,4}$"
+              },
+              "bin": {
+                "description": "BIN банка-эмитента карты",
+                "type": "string",
+                "pattern": "^\\d{6,8}$"
+              },
+              "lastDigits": {
+                "description": "Последние цифры номера карты",
+                "type": "string",
+                "pattern": "^\\d{2,4}$"
+              },
+              "paymentSystem": {
+                "$ref": "#/components/schemas/BankCardPaymentSystem"
+              },
+              "tokenProvider": {
+                "$ref": "#/components/schemas/BankCardTokenProvider"
+              }
+            }
+          }
+        ]
+      },
+      "CryptoCurrency": {
+        "description": "Криптовалюта",
+        "type": "string",
+        "enum": [
+          "Bitcoin",
+          "Litecoin",
+          "BitcoinCash",
+          "Ripple",
+          "Ethereum",
+          "Zcash"
+        ]
+      },
+      "CryptoWallet": {
+        "description": "Данные криптовалютного кошелька",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DestinationResource"
+          },
+          {
+            "type": "object",
+            "required": [
+              "cryptoWalletId",
+              "currency"
+            ],
+            "properties": {
+              "cryptoWalletId": {
+                "description": "Идентификатор (он же адрес) криптовалютного кошелька",
+                "type": "string",
+                "minLength": 16,
+                "maxLength": 256,
+                "example": "zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ"
+              },
+              "currency": {
+                "$ref": "#/components/schemas/CryptoCurrency"
+              }
+            }
+          }
+        ]
+      },
+      "DigitalWallet": {
+        "description": "Данные криптовалютного кошелька",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DestinationResource"
+          },
+          {
+            "type": "object",
+            "required": [
+              "digitalWalletId",
+              "digitalWalletProvider"
+            ],
+            "properties": {
+              "digitalWalletId": {
+                "description": "Идентификатор кошелька",
+                "type": "string",
+                "minLength": 16,
+                "maxLength": 256,
+                "example": "zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ"
+              },
+              "digitalWalletProvider": {
+                "description": "Провайдер электронных денежных средств",
+                "type": "string",
+                "example": "Paypal"
+              }
+            }
+          }
+        ]
+      },
+      "Destination": {
+        "description": "Данные приемника денежных средств",
+        "type": "object",
+        "required": [
+          "name",
+          "identity",
+          "currency",
+          "resource"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/DestinationID"
+          },
+          "name": {
+            "description": "Человекочитаемое название приёмника средств, по которому его легко узнать\n",
+            "type": "string",
+            "example": "Squarey plastic thingy"
+          },
+          "identity": {
+            "$ref": "#/components/schemas/IdentityID"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyID"
+          },
+          "resource": {
+            "$ref": "#/components/schemas/DestinationResource"
+          },
+          "metadata": {
+            "description": "Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с\nданным приёмником\n",
+            "type": "object",
+            "example": {
+              "color_hint": "olive-green"
+            }
+          },
+          "externalID": {
+            "$ref": "#/components/schemas/ExternalID"
+          }
+        }
+      },
+      "DestinationCreated": {
+        "description": "Событие создания приемника денежных средств",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Event"
+          },
+          {
+            "type": "object",
+            "required": [
+              "destination"
+            ],
+            "properties": {
+              "destination": {
+                "$ref": "#/components/schemas/Destination"
+              }
+            }
+          }
+        ]
+      },
+      "DestinationAuthorized": {
+        "description": "Смена статуса приемника на авторизованный",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Event"
+          },
+          {
+            "type": "object",
+            "required": [
+              "destinationID"
+            ],
+            "properties": {
+              "destinationID": {
+                "$ref": "#/components/schemas/DestinationID"
+              },
+              "externalID": {
+                "$ref": "#/components/schemas/ExternalID"
+              }
+            }
+          }
+        ]
+      },
+      "DestinationUnauthorized": {
+        "description": "Смена статуса приемника на не авторизованный",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Event"
+          },
+          {
+            "type": "object",
+            "required": [
+              "destinationID"
+            ],
+            "properties": {
+              "destinationID": {
+                "$ref": "#/components/schemas/DestinationID"
+              },
+              "externalID": {
+                "$ref": "#/components/schemas/ExternalID"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
