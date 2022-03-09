@@ -1,4 +1,4 @@
-name: gh-pages
+name: release-spec-bundle
 on:
   push:
     branches: [master]
