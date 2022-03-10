@@ -9,6 +9,11 @@ on:
 jobs:
   deploy:
     uses: valitydev/java-workflow/.github/workflows/maven-swag-deploy.yml@v1
+<<<<<<< Updated upstream
+=======
+    with:
+      dist-directory: ./dist
+>>>>>>> Stashed changes
     secrets:
       dist-directory: ./dist
       server-username: ${{ secrets.OSSRH_USERNAME }}
