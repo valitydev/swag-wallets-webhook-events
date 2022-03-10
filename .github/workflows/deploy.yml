@@ -10,6 +10,7 @@ jobs:
   deploy:
     uses: valitydev/java-workflow/.github/workflows/maven-swag-deploy.yml@v1
     secrets:
+      dist-directory: ./dist
       server-username: ${{ secrets.OSSRH_USERNAME }}
       server-password: ${{ secrets.OSSRH_TOKEN }}
       deploy-secret-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
