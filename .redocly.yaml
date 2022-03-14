@@ -5,7 +5,10 @@ lint:
   extends:
     - recommended
   rules:
-    tag-description: off
+    # NOTE
+    # We don't actually expect a backend receiving webhook events following
+    # this specification to respond with anything other than 200 OK.
+    operation-4xx-response: off
 referenceDocs:
   showConsole: true
   layout:
