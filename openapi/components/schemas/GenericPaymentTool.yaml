@@ -1,0 +1,10 @@
+description: Универсальный платежный метод
+allOf:
+  - $ref: '../schemas/DestinationResource.yaml'
+  - type: object
+    required:
+      - paymentServiceId
+    properties:
+      paymentServiceId:
+        description: Идентификатор платежного сервиса
+        type: string
