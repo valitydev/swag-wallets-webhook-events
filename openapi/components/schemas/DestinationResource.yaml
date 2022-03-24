@@ -11,6 +11,7 @@ properties:
       - BankCard
       - CryptoWallet
       - DigitalWallet
+      - GenericPaymentTool
 
 discriminator:
   propertyName: type
@@ -18,3 +19,4 @@ discriminator:
     'BankCard': '../schemas/BankCard.yaml'
     'CryptoWallet': '../schemas/CryptoWallet.yaml'
     'DigitalWallet': '../schemas/DigitalWallet.yaml'
+    'GenericPaymentTool': '../schemas/GenericPaymentTool.yaml'
