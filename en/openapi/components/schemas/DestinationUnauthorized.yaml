@@ -1,0 +1,13 @@
+description: Смена статуса приемника на не авторизованный
+allOf:
+  - 
+    $ref: '../schemas/Event.yaml'
+  - 
+    type: object
+    required:
+      - destinationID
+    properties:
+      destinationID:
+        $ref: '../schemas/DestinationID.yaml'
+      externalID:
+        $ref: '../schemas/ExternalID.yaml'
