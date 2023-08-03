@@ -1,0 +1,11 @@
+description: Событие о начале осуществления вывода средств
+allOf:
+  - 
+    $ref: '../schemas/Event.yaml'
+  - 
+    type: object
+    required:
+      - withdrawal
+    properties:
+      withdrawal:
+        $ref: '../schemas/Withdrawal.yaml'
