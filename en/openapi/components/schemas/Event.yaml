@@ -1,4 +1,4 @@
-description: Данные события
+description: Event data
 type: object
 required:
   - occuredAt
@@ -6,7 +6,7 @@ required:
   - eventType
 properties:
   eventID:
-    description: Идентификатор события в системе
+    description: Event identifier
     type: string
   occuredAt:
     description: Date and time the event occurrence
