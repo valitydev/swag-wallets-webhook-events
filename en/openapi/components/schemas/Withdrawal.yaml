@@ -1,0 +1,25 @@
+description: Данные вывода денежных средств
+type: object
+required:
+  - wallet
+  - destination
+  - body
+properties:
+  id:
+    $ref: '../schemas/WithdrawalID.yaml'
+  createdAt:
+    description: Дата и время запуска вывода
+    type: string
+    format: date-time
+  destination:
+    $ref: '../schemas/DestinationID.yaml'
+  body:
+    $ref: '../schemas/WithdrawalBody.yaml'
+  metadata:
+    description: |
+      Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
+      данным выводом
+  wallet:
+    $ref: '../schemas/WalletID.yaml'
+  externalID:
+    $ref: '../schemas/ExternalID.yaml'
