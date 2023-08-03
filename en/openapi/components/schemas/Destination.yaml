@@ -1,4 +1,4 @@
-description: Данные приемника денежных средств
+description: Destination data
 type: object
 required:
   - name
