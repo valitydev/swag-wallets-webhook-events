@@ -1,0 +1,30 @@
+description: Данные приемника денежных средств
+type: object
+required:
+  - name
+  - identity
+  - currency
+  - resource
+properties:
+  id:
+    $ref: '../schemas/DestinationID.yaml'
+  name:
+    description: |
+      Человекочитаемое название приёмника средств, по которому его легко узнать
+    type: string
+    example: Squarey plastic thingy
+  identity:
+    $ref: '../schemas/IdentityID.yaml'
+  currency:
+    $ref: '../schemas/CurrencyID.yaml'
+  resource:
+    $ref: '../schemas/DestinationResource.yaml'
+  metadata:
+    description: |
+      Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
+      данным приёмником
+    type: object
+    example:
+      color_hint: olive-green
+  externalID:
+    $ref: '../schemas/ExternalID.yaml'
