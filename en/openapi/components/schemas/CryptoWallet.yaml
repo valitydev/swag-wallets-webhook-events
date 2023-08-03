@@ -1,4 +1,4 @@
-description: Данные криптовалютного кошелька
+description: Cryptocurrency wallet details
 allOf:
   - 
     $ref: '../schemas/DestinationResource.yaml'
@@ -9,7 +9,7 @@ allOf:
       - currency
     properties:
       cryptoWalletId:
-        description: Идентификатор (он же адрес) криптовалютного кошелька
+        description: Identifier (aka address) of a cryptocurrency wallet
         type: string
         minLength: 16
         maxLength: 256
