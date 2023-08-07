@@ -10,81 +10,50 @@ info:
 
     ## Wallet Webhook Events API
 
-    Данная спецификация определяет протокол доставки оповещений о возникновении
-    новых событий по кошелькам в рамках вашей организации, которые система доставляет в
-    виде HTTP-запросов на URL-адреса созданных вами webhook'ов. Обработчики для
-    подобного рода запросов необходимо реализовать на стороне вашего серверного
-    кода согласно данной спецификации.
+    The specification defines a protocol for delivering notifications about new wallet events within your organisation. The notifications are deliveried by the system as HTTP requests to the URL of webhooks you created. Handlers for such kind of queries should be implemented on the side of your server code according to the specification.
 
-    Webhook — это подписка на определенный тип события либо их группу,
-    касающихся различных объектов в рамках вашей организации. Для управления
-    webhook'ами используются методы API, описанные в спецификации
-    [Vality Webhook Management API](https://github.com/valitydev/swag-wallets).
-    Когда наступает одно из событий в рамках определенного кошелька (например,
-    изменение статуса кошелька), система выбирает
-    webhook, подходящий под этот тип события, и отправляет HTTP-запрос,
-    содержащий сообщение в формате JSON на указанный в этом webhook'е URL. Если
-    вы создали несколько webhook'ов, подходящих под этот тип события, то событие
-    доставляется одновременно на все заданные в них URL в неопределённом
-    порядке.
+    Webhook is a subscription to a specific type of event or group of events relating to different objects within your organisation. API methods described in the specification [Vality Webhook Management API](https://github.com/valitydev/swag-wallets) are used to manage webhooks.
 
-    ## Стратегия доставки
+    When within the wallet one of the events occurs (e.g. a wallet status change), the system selects a webhook matching that event type and sends an HTTP request containing a JSON message to the URL specified in the webhook. If several webhooks matching this event type were created, the event is simultaneously delivered to all URLs specified in those webhooks in an undefined order.
 
-    Система гарантирует порядок доставки событий в рамках определенного предмета оповещения
-    (кошелек, пополнение, выплата и т.п.). Система поддерживает очередь сообщений для каждого
-    предмета оповещения, чтобы соблюсти очередность и гарантированную доставку.
+    ## Delivery strategy
 
-    Запрос на доставку считается успешным только при получении ответа со
-    статусом `200`. Система будет ожидать успешного ответа на отправленный
-    запрос в течение 10 секунд. В случае ответа любым другим статусом или по
-    истечении указанного времени, отведённого на обработку оповещения, система
-    будет пытаться повторно доставить оповещения до получения успешного ответа,
-    либо до принятия решения о невозможности доставить информацию. Попытки
-    доставки будут производиться со следующими временными интервалами между
-    запросами:
+    The system guarantees events delivery order within a specific notification subject (wallet, deposit, withdrawal, etc.). The system maintains a message queue for each notification item to keep the sequence and ensure the guaranteed delivery.
 
-      - 30 секунд,
-      - 5 минут,
-      - 15 минут,
-      - 1 час.
-      - каждый час в течение суток (24 часа)
+    A delivery request is considered to be successful only when a response with status `200` is received. The system will wait for a successful response to the sent a request during 10 seconds. In case of a response with any other status or after expiration of the specified time which was reserved to process the notification, the system will try to re-deliver notifications until a successful response is received, or until a decision is made that it is impossible to deliver information. Delivery attempts will be made at the following time intervals between requests:
 
-    Если последняя попытка доставить оповещение оканчивается неудачей, все события, которые
-    накопились в очереди этого кошелька, отбрасываются.
+      - 30 seconds,
+      - 5 minutes,
+      - 15 minutes,
+      - 1 hour.
+      - every hour within 24 hours
 
-    ## Авторизация полученных сообщений
+    If the last attempt of notification delivery fails, all the events that have been accumulated in this wallet queue are discarded.
 
-    Система подтверждает подлинность оповещений, подписывая сообщения
-    приватным ключом, уникальным для каждого webhook'а, парный публичный ключ к
-    которому содержится в данных этого webhook'а. Подпись передается в
-    HTTP-заголовке `Content-Signature`. В заголовке в виде различных атрибутов
-    содержится информация об использованном при формировании подписи алгоритме и
-    значение подписи в формате
-    [URL-safe base-64](https://tools.ietf.org/html/rfc4648).
+    ## Received messages authorization
+
+    The system confirms notifications authenticity by signing messages with a private key that is unique to each webhook, the paired public key of which is contained in the data of that webhook. The signature is transmitted in the HTTP header Content-Signature. Represented in various atributes the header contains the information about the algorithm used to create a signature and content of the signature in the format [URL-safe base-64](https://tools.ietf.org/html/rfc4648).
 
     ```
     Content-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo...
     ```
 
-    На данный момент возможно использование единственного алоритма формирования
-    подписи.
+    At the moment the only one signature generation alorithm is possible to use.
 
     ### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)
 
-    Подпись формируется согласно алгоритму
-    [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2), на
-    вход которому подаётся результат вычисления хэша сообщения по алгоритму
-    [SHA-256](https://tools.ietf.org/html/rfc6234).
+    The signature is generated according to
+    [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2) algorithm , which itself uses result of message
+    [SHA-256](https://tools.ietf.org/html/rfc6234) calculation.
 
-    Набор атрибутов заголовка и список возможных алгоритмов формирования подписи
-    в дальнейшем могут быть расширены.
+    The set of header attributes and the list of possible signature generation algorithms can be expanded later.
 servers:
   - 
     url: 'https://merchant.site'
 tags:
   - 
     name: Event Notifications
-    x-displayName: Оповещения
+    x-displayName: Notifications
     description: Доставка оповещений о событиях системы.
 paths:
   '/webhook':
