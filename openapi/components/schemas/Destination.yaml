@@ -1,4 +1,4 @@
-description: Данные приемника денежных средств
+description: Destination data
 type: object
 required:
   - name
@@ -7,24 +7,24 @@ required:
   - resource
 properties:
   id:
-    $ref: '../schemas/DestinationID.yaml'
+    $ref: "../schemas/DestinationID.yaml"
   name:
     description: |
-      Человекочитаемое название приёмника средств, по которому его легко узнать
+      A human-readable name for the receiver by which it is easily recognizable
     type: string
     example: Squarey plastic thingy
   identity:
-    $ref: '../schemas/IdentityID.yaml'
+    $ref: "../schemas/IdentityID.yaml"
   currency:
-    $ref: '../schemas/CurrencyID.yaml'
+    $ref: "../schemas/CurrencyID.yaml"
   resource:
-    $ref: '../schemas/DestinationResource.yaml'
+    $ref: "../schemas/DestinationResource.yaml"
   metadata:
-    description: |
-      Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с
-      данным приёмником
+    description: >
+      An arbitrary, client-specific API and non-transparent set of data
+      associated with given receiver
     type: object
     example:
       color_hint: olive-green
   externalID:
-    $ref: '../schemas/ExternalID.yaml'
+    $ref: "../schemas/ExternalID.yaml"

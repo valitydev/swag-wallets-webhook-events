@@ -1,24 +1,24 @@
-description: Данные банковской карты
+description: Bank card details
 allOf:
-  - $ref: '../schemas/DestinationResource.yaml'
+  - $ref: "../schemas/DestinationResource.yaml"
   - type: object
     required:
       - cardNumberMask
       - paymentSystem
     properties:
       cardNumberMask:
-        description: Маскированый номер карты
+        description: Masked card number
         type: string
         pattern: '^\d{6,8}\*+\d{2,4}$'
       bin:
-        description: BIN банка-эмитента карты
+        description: Card issuing bank BIN
         type: string
         pattern: '^\d{6,8}$'
       lastDigits:
-        description: Последние цифры номера карты
+        description: Card last digits
         type: string
         pattern: '^\d{2,4}$'
       paymentSystem:
-        $ref: '../schemas/BankCardPaymentSystem.yaml'
+        $ref: "../schemas/BankCardPaymentSystem.yaml"
       tokenProvider:
-        $ref: '../schemas/BankCardTokenProvider.yaml'
+        $ref: "../schemas/BankCardTokenProvider.yaml"

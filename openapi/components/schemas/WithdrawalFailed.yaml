@@ -1,11 +1,11 @@
-description: Событие о неуспешном осуществлении вывода средств
+description: Unsuccessful withdrawal event
 allOf:
-  - $ref: '../schemas/Event.yaml'
+  - $ref: "../schemas/Event.yaml"
   - type: object
     required:
       - withdrawalID
     properties:
       withdrawalID:
-        $ref: '../schemas/WithdrawalID.yaml'
+        $ref: "../schemas/WithdrawalID.yaml"
       externalID:
-        $ref: '../schemas/ExternalID.yaml'
+        $ref: "../schemas/ExternalID.yaml"

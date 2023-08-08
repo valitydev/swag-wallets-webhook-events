@@ -1,4 +1,4 @@
-description: Провайдер платежных токенов
+description: Payment token provider
 type: string
 enum:
   - applepay

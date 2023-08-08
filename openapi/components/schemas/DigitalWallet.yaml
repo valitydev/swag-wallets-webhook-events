@@ -1,19 +1,18 @@
-description: Данные криптовалютного кошелька
+description: Cryptocurrency wallet details
 allOf:
-  - $ref: '../schemas/DestinationResource.yaml'
+  - $ref: "../schemas/DestinationResource.yaml"
   - type: object
     required:
       - digitalWalletId
       - digitalWalletProvider
     properties:
       digitalWalletId:
-        description: Идентификатор кошелька
+        description: E-wallet identifier
         type: string
         minLength: 16
         maxLength: 256
         example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
       digitalWalletProvider:
-        description: Провайдер электронных денежных средств
+        description: Electronic assets service provider
         type: string
         example: Paypal
-

@@ -1,12 +1,2 @@
-description: Платежная система
+description: Payment system
 type: string
-# enum:
-#   - visa
-#   - mastercard
-#   - dankort
-#   - amex
-#   - dinersclub
-#   - discover
-#   - unionpay
-#   - jcb
-#   - nspkmir
