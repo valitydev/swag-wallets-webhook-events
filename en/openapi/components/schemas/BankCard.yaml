@@ -1,7 +1,7 @@
 description: Bank card details
 allOf:
   - 
-    $ref: '../schemas/DestinationResource.yaml'
+    $ref: "../schemas/DestinationResource.yaml"
   - 
     type: object
     required:
@@ -21,6 +21,6 @@ allOf:
         type: string
         pattern: '^\d{2,4}$'
       paymentSystem:
-        $ref: '../schemas/BankCardPaymentSystem.yaml'
+        $ref: "../schemas/BankCardPaymentSystem.yaml"
       tokenProvider:
-        $ref: '../schemas/BankCardTokenProvider.yaml'
+        $ref: "../schemas/BankCardTokenProvider.yaml"
