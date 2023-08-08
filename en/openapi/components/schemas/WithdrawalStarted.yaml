@@ -1,4 +1,4 @@
-description: Событие о начале осуществления вывода средств
+description: Withdrawal start event
 allOf:
   - 
     $ref: '../schemas/Event.yaml'
