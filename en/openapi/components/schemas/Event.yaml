@@ -13,14 +13,14 @@ properties:
     type: string
     format: date-time
   topic:
-    description: Предмет оповещения
+    description: Subject of notification
     type: string
     enum:
       - WithdrawalTopic
       - DestinationTopic
   eventType:
     type: string
-    description: Тип произошедшего с предметом оповещения события
+    description: Type of event that occurred
     enum:
       - WithdrawalStarted
       - WithdrawalSucceeded
