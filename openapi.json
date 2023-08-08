@@ -8,7 +8,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "description": "\n## Wallet Webhook Events API\n\nДанная спецификация определяет протокол доставки оповещений о возникновении\nновых событий по кошелькам в рамках вашей организации, которые система доставляет в\nвиде HTTP-запросов на URL-адреса созданных вами webhook'ов. Обработчики для\nподобного рода запросов необходимо реализовать на стороне вашего серверного\nкода согласно данной спецификации.\n\nWebhook — это подписка на определенный тип события либо их группу,\nкасающихся различных объектов в рамках вашей организации. Для управления\nwebhook'ами используются методы API, описанные в спецификации\n[Vality Webhook Management API](https://github.com/valitydev/swag-wallets).\nКогда наступает одно из событий в рамках определенного кошелька (например,\nизменение статуса кошелька), система выбирает\nwebhook, подходящий под этот тип события, и отправляет HTTP-запрос,\nсодержащий сообщение в формате JSON на указанный в этом webhook'е URL. Если\nвы создали несколько webhook'ов, подходящих под этот тип события, то событие\nдоставляется одновременно на все заданные в них URL в неопределённом\nпорядке.\n\n## Стратегия доставки\n\nСистема гарантирует порядок доставки событий в рамках определенного предмета оповещения\n(кошелек, пополнение, выплата и т.п.). Система поддерживает очередь сообщений для каждого\nпредмета оповещения, чтобы соблюсти очередность и гарантированную доставку.\n\nЗапрос на доставку считается успешным только при получении ответа со\nстатусом `200`. Система будет ожидать успешного ответа на отправленный\nзапрос в течение 10 секунд. В случае ответа любым другим статусом или по\nистечении указанного времени, отведённого на обработку оповещения, система\nбудет пытаться повторно доставить оповещения до получения успешного ответа,\nлибо до принятия решения о невозможности доставить информацию. Попытки\nдоставки будут производиться со следующими временными интервалами между\nзапросами:\n\n  - 30 секунд,\n  - 5 минут,\n  - 15 минут,\n  - 1 час.\n  - каждый час в течение суток (24 часа)\n\nЕсли последняя попытка доставить оповещение оканчивается неудачей, все события, которые\nнакопились в очереди этого кошелька, отбрасываются.\n\n## Авторизация полученных сообщений\n\nСистема подтверждает подлинность оповещений, подписывая сообщения\nприватным ключом, уникальным для каждого webhook'а, парный публичный ключ к\nкоторому содержится в данных этого webhook'а. Подпись передается в\nHTTP-заголовке `Content-Signature`. В заголовке в виде различных атрибутов\nсодержится информация об использованном при формировании подписи алгоритме и\nзначение подписи в формате\n[URL-safe base-64](https://tools.ietf.org/html/rfc4648).\n\n```\nContent-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo...\n```\n\nНа данный момент возможно использование единственного алоритма формирования\nподписи.\n\n### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)\n\nПодпись формируется согласно алгоритму\n[RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2), на\nвход которому подаётся результат вычисления хэша сообщения по алгоритму\n[SHA-256](https://tools.ietf.org/html/rfc6234).\n\nНабор атрибутов заголовка и список возможных алгоритмов формирования подписи\nв дальнейшем могут быть расширены.\n"
+    "description": "\n## Wallet Webhook Events API\nThe specification defines a protocol for delivering notifications about new wallet events within your organisation. The notifications are deliveried by the system as HTTP requests to the URL of webhooks you created. Handlers for such kind of queries should be implemented on the side of your server code according to the specification.\n\nWebhook is a subscription to a specific type of event or group of events relating to different objects within your organisation. API methods described in the specification [Vality Webhook Management API](https:/github.com/valitydev/swag-wallets) are used to manage webhooks.\n\nWhen within the wallet one of the events occurs (e.g. a wallet status change), the system selects a webhook matching that event type and sends an HTTP request containing a JSON message to the URL specified in the webhook. If several webhooks matching this event type were created, the event is simultaneously delivered to all URLs specified in those webhooks in an undefined order.\n## Delivery strategy\nThe system guarantees events delivery order within a specific notification subject (wallet, deposit, withdrawal, etc.). The system maintains a message queue for each notification item to keep the sequence and ensure the guaranteed delivery.\n\nA delivery request is considered to be successful only when a response with status `200` is received. The system will wait for a successful response to the sent a request during 10 seconds. In case of a response with any other status or after expiration of the specified time which was reserved to process the notification, the system will try to re-deliver notifications until a successful response is received, or until a decision is made that it is impossible to deliver information. Delivery attempts will be made at the following time intervals between requests:\n\n  - 30 seconds,\n  - 5 minutes,\n  - 15 minutes,\n  - 1 hour.\n  - every hour within 24 hours\n\nIf the last attempt of notification delivery fails, all the events that have been accumulated in this wallet queue are discarded.\n## Received messages authorization\nThe system confirms notifications authenticity by signing messages with a private key that is unique to each webhook, the paired public key of which is contained in the data of that webhook. The signature is transmitted in the HTTP header Content-Signature. Represented in various atributes the header contains the information about the algorithm used to create a signature and content of the signature in the format [URL-safe base-64](https://tools.ietf.org/html/rfc4648).\n\n``` Content-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo... ```\n\nAt the moment the only one signature generation algorithm is possible to use.\n### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)\nThe signature is generated according to [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2) algorithm , which itself uses result of message [SHA-256](https://tools.ietf.org/html/rfc6234) calculation.\n\nThe set of header attributes and the list of possible signature generation algorithms can be expanded later.\n"
   },
   "servers": [
     {
@@ -18,8 +18,8 @@
   "tags": [
     {
       "name": "Event Notifications",
-      "x-displayName": "Оповещения",
-      "description": "Доставка оповещений о событиях системы."
+      "x-displayName": "Notifications",
+      "description": "Delivery of platform event notifications."
     }
   ],
   "paths": {
@@ -28,7 +28,7 @@
         "tags": [
           "Event Notifications"
         ],
-        "summary": "Оповестить о событии",
+        "summary": "Notify of an event",
         "operationId": "notifyWebhookEvent",
         "parameters": [
           {
@@ -36,7 +36,7 @@
           }
         ],
         "requestBody": {
-          "description": "Данные произошедшего в платформе события",
+          "description": "Data from an event that occurred in the platform",
           "required": true,
           "content": {
             "application/json": {
@@ -48,7 +48,7 @@
         },
         "responses": {
           "200": {
-            "description": "Оповещение обработано"
+            "description": "Notification processed"
           }
         }
       }
@@ -59,7 +59,7 @@
       "signature": {
         "name": "Content-Signature",
         "in": "header",
-        "description": "Подпись сообщения, сформированная согласно указанным выше правилам\n",
+        "description": "Message signature formed according to the above rules\n",
         "required": true,
         "schema": {
           "type": "string"
@@ -68,7 +68,7 @@
     },
     "schemas": {
       "Event": {
-        "description": "Данные события",
+        "description": "Event data",
         "type": "object",
         "required": [
           "occuredAt",
@@ -77,16 +77,16 @@
         ],
         "properties": {
           "eventID": {
-            "description": "Идентификатор события в системе",
+            "description": "Event identifier",
             "type": "string"
           },
           "occuredAt": {
-            "description": "Дата и время возникновения события",
+            "description": "Date and time the event occurrence",
             "type": "string",
             "format": "date-time"
           },
           "topic": {
-            "description": "Предмет оповещения",
+            "description": "Subject of notification",
             "type": "string",
             "enum": [
               "WithdrawalTopic",
@@ -95,7 +95,7 @@
           },
           "eventType": {
             "type": "string",
-            "description": "Тип произошедшего с предметом оповещения события",
+            "description": "Type of event that occurred",
             "enum": [
               "WithdrawalStarted",
               "WithdrawalSucceeded",
@@ -119,23 +119,23 @@
         }
       },
       "WithdrawalID": {
-        "description": "Идентификатор вывода денежных средств",
+        "description": "Identifier of funds withdrawal",
         "type": "string",
         "example": "tZ0jUmlsV0"
       },
       "DestinationID": {
-        "description": "Идентификатор места назначения денежных средств",
+        "description": "Destination identifier",
         "type": "string",
         "example": "10ASF74D98"
       },
       "CurrencyID": {
-        "description": "Валюта, символьный код согласно [ISO\n4217](http://www.iso.org/iso/home/standards/currency_codes.htm).\n",
+        "description": "Currency, character code according to [ISO 4217](http://www.iso.org/iso/home/standards/currency_codes.htm).\n",
         "type": "string",
         "pattern": "^[A-Z]{3}$",
         "example": "RUB"
       },
       "WithdrawalBody": {
-        "description": "Объём средств, которые необходимо вывести\n",
+        "description": "Amount of funds to be withdrawn\n",
         "type": "object",
         "required": [
           "amount",
@@ -143,7 +143,7 @@
         ],
         "properties": {
           "amount": {
-            "description": "Сумма денежных средств в минорных единицах, например, в копейках\n",
+            "description": "The amount of money in minor units, for example, in cents\n",
             "type": "integer",
             "format": "int64",
             "example": 1430000
@@ -154,17 +154,17 @@
         }
       },
       "WalletID": {
-        "description": "Идентификатор кошелька",
+        "description": "Identifier of the wallet",
         "type": "string",
         "example": "10068321"
       },
       "ExternalID": {
-        "description": "Уникальный идентификатор сущности на вашей стороне.\n\nПри указании будет использован для того, чтобы гарантировать идемпотентную обработку операции.\n",
+        "description": "The unique identifier of the content on your side.\n\nWhen specified, will be used to ensure idempotent processing of the operation.\n",
         "type": "string",
         "example": "10036274"
       },
       "Withdrawal": {
-        "description": "Данные вывода денежных средств",
+        "description": "Funds withdrawal data",
         "type": "object",
         "required": [
           "wallet",
@@ -176,7 +176,7 @@
             "$ref": "#/components/schemas/WithdrawalID"
           },
           "createdAt": {
-            "description": "Дата и время запуска вывода",
+            "description": "Date and time the withdrawal started",
             "type": "string",
             "format": "date-time"
           },
@@ -187,7 +187,7 @@
             "$ref": "#/components/schemas/WithdrawalBody"
           },
           "metadata": {
-            "description": "Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с\nданным выводом\n"
+            "description": "A custom client-specific API and a data set that is not transparent to the system, associated with this withdrawal\n"
           },
           "wallet": {
             "$ref": "#/components/schemas/WalletID"
@@ -198,7 +198,7 @@
         }
       },
       "WithdrawalStarted": {
-        "description": "Событие о начале осуществления вывода средств",
+        "description": "Withdrawal start event",
         "allOf": [
           {
             "$ref": "#/components/schemas/Event"
@@ -217,7 +217,7 @@
         ]
       },
       "WithdrawalSucceeded": {
-        "description": "Событие об успешном осуществлении вывода средств",
+        "description": "Successful withdrawal event",
         "allOf": [
           {
             "$ref": "#/components/schemas/Event"
@@ -239,7 +239,7 @@
         ]
       },
       "WithdrawalFailed": {
-        "description": "Событие о неуспешном осуществлении вывода средств",
+        "description": "Unsuccessful withdrawal event",
         "allOf": [
           {
             "$ref": "#/components/schemas/Event"
@@ -261,19 +261,19 @@
         ]
       },
       "IdentityID": {
-        "description": "Идентификатор личности владельца кошелька",
+        "description": "Identifier of wallet owner",
         "type": "string",
         "example": "tZ0jUmlsV0"
       },
       "DestinationResource": {
-        "description": "Ресурс приёмника денежных средств, используемый для осуществления выводов",
+        "description": "Asset receiver resource used to make withdrawals",
         "type": "object",
         "required": [
           "type"
         ],
         "properties": {
           "type": {
-            "description": "Тип ресурса приёмника средств.\n",
+            "description": "Destination resource type\n",
             "type": "string",
             "enum": [
               "BankCard",
@@ -292,11 +292,11 @@
         }
       },
       "BankCardPaymentSystem": {
-        "description": "Платежная система",
+        "description": "Payment system",
         "type": "string"
       },
       "BankCardTokenProvider": {
-        "description": "Провайдер платежных токенов",
+        "description": "Payment token provider",
         "type": "string",
         "enum": [
           "applepay",
@@ -305,7 +305,7 @@
         ]
       },
       "BankCard": {
-        "description": "Данные банковской карты",
+        "description": "Bank card details",
         "allOf": [
           {
             "$ref": "#/components/schemas/DestinationResource"
@@ -318,17 +318,17 @@
             ],
             "properties": {
               "cardNumberMask": {
-                "description": "Маскированый номер карты",
+                "description": "Masked card number",
                 "type": "string",
                 "pattern": "^\\d{6,8}\\*+\\d{2,4}$"
               },
               "bin": {
-                "description": "BIN банка-эмитента карты",
+                "description": "Card issuing bank BIN",
                 "type": "string",
                 "pattern": "^\\d{6,8}$"
               },
               "lastDigits": {
-                "description": "Последние цифры номера карты",
+                "description": "Card last digits",
                 "type": "string",
                 "pattern": "^\\d{2,4}$"
               },
@@ -343,7 +343,7 @@
         ]
       },
       "CryptoCurrency": {
-        "description": "Криптовалюта",
+        "description": "Cryptocurrency",
         "type": "string",
         "enum": [
           "Bitcoin",
@@ -355,7 +355,7 @@
         ]
       },
       "CryptoWallet": {
-        "description": "Данные криптовалютного кошелька",
+        "description": "Cryptocurrency wallet details",
         "allOf": [
           {
             "$ref": "#/components/schemas/DestinationResource"
@@ -368,7 +368,7 @@
             ],
             "properties": {
               "cryptoWalletId": {
-                "description": "Идентификатор (он же адрес) криптовалютного кошелька",
+                "description": "Identifier (aka address) of a cryptocurrency wallet",
                 "type": "string",
                 "minLength": 16,
                 "maxLength": 256,
@@ -382,7 +382,7 @@
         ]
       },
       "DigitalWallet": {
-        "description": "Данные криптовалютного кошелька",
+        "description": "Cryptocurrency wallet details",
         "allOf": [
           {
             "$ref": "#/components/schemas/DestinationResource"
@@ -395,14 +395,14 @@
             ],
             "properties": {
               "digitalWalletId": {
-                "description": "Идентификатор кошелька",
+                "description": "E-wallet identifier",
                 "type": "string",
                 "minLength": 16,
                 "maxLength": 256,
                 "example": "zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ"
               },
               "digitalWalletProvider": {
-                "description": "Провайдер электронных денежных средств",
+                "description": "Electronic assets service provider",
                 "type": "string",
                 "example": "Paypal"
               }
@@ -411,7 +411,7 @@
         ]
       },
       "Destination": {
-        "description": "Данные приемника денежных средств",
+        "description": "Destination data",
         "type": "object",
         "required": [
           "name",
@@ -424,7 +424,7 @@
             "$ref": "#/components/schemas/DestinationID"
           },
           "name": {
-            "description": "Человекочитаемое название приёмника средств, по которому его легко узнать\n",
+            "description": "A human-readable name for the receiver by which it is easily recognizable\n",
             "type": "string",
             "example": "Squarey plastic thingy"
           },
@@ -438,7 +438,7 @@
             "$ref": "#/components/schemas/DestinationResource"
           },
           "metadata": {
-            "description": "Произвольный, специфичный для клиента API и непрозрачный для системы набор данных, ассоциированных с\nданным приёмником\n",
+            "description": "An arbitrary, client-specific API and non-transparent set of data associated with given receiver\n",
             "type": "object",
             "example": {
               "color_hint": "olive-green"
@@ -450,7 +450,7 @@
         }
       },
       "DestinationCreated": {
-        "description": "Событие создания приемника денежных средств",
+        "description": "Destination creation event",
         "allOf": [
           {
             "$ref": "#/components/schemas/Event"
@@ -469,7 +469,7 @@
         ]
       },
       "DestinationAuthorized": {
-        "description": "Смена статуса приемника на авторизованный",
+        "description": "Changing the status of the destination receiver to authorized",
         "allOf": [
           {
             "$ref": "#/components/schemas/Event"
@@ -491,7 +491,7 @@
         ]
       },
       "DestinationUnauthorized": {
-        "description": "Смена статуса приемника на не авторизованный",
+        "description": "Changing the status of the destination receiver to unauthorized",
         "allOf": [
           {
             "$ref": "#/components/schemas/Event"
