@@ -1,11 +1,11 @@
 description: Withdrawal start event
 allOf:
   - 
-    $ref: '../schemas/Event.yaml'
+    $ref: "../schemas/Event.yaml"
   - 
     type: object
     required:
       - withdrawal
     properties:
       withdrawal:
-        $ref: '../schemas/Withdrawal.yaml'
+        $ref: "../schemas/Withdrawal.yaml"
