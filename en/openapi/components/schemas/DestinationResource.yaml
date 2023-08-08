@@ -5,7 +5,7 @@ required:
 properties:
   type:
     description: |
-      Тип ресурса приёмника средств.
+      Destination resource type
     type: string
     enum:
       - BankCard
