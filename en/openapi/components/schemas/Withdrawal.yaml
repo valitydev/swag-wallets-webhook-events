@@ -1,0 +1,24 @@
+description: Funds withdrawal data
+type: object
+required:
+  - wallet
+  - destination
+  - body
+properties:
+  id:
+    $ref: "../schemas/WithdrawalID.yaml"
+  createdAt:
+    description: Date and time the withdrawal started
+    type: string
+    format: date-time
+  destination:
+    $ref: "../schemas/DestinationID.yaml"
+  body:
+    $ref: "../schemas/WithdrawalBody.yaml"
+  metadata:
+    description: >
+      A custom client-specific API and a data set that is not transparent to the system, associated with this withdrawal
+  wallet:
+    $ref: "../schemas/WalletID.yaml"
+  externalID:
+    $ref: "../schemas/ExternalID.yaml"

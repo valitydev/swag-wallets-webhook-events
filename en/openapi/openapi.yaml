@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Vality Wallets. Webhooks Events API
+  termsOfService: https://vality.dev/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  description: >
+
+    ## Wallet Webhook Events API
+    The specification defines a protocol for delivering notifications about new wallet events within your organisation. The notifications are deliveried by the system as HTTP requests to the URL of webhooks you created. Handlers for such kind of queries should be implemented on the side of your server code according to the specification.
+
+    Webhook is a subscription to a specific type of event or group of events relating to different objects within your organisation. API methods described in the specification [Vality Webhook Management API](https:/github.com/valitydev/swag-wallets) are used to manage webhooks.
+
+    When within the wallet one of the events occurs (e.g. a wallet status change), the system selects a webhook matching that event type and sends an HTTP request containing a JSON message to the URL specified in the webhook. If several webhooks matching this event type were created, the event is simultaneously delivered to all URLs specified in those webhooks in an undefined order.
+    ## Delivery strategy
+    The system guarantees events delivery order within a specific notification subject (wallet, deposit, withdrawal, etc.). The system maintains a message queue for each notification item to keep the sequence and ensure the guaranteed delivery.
+
+    A delivery request is considered to be successful only when a response with status `200` is received. The system will wait for a successful response to the sent a request during 10 seconds. In case of a response with any other status or after expiration of the specified time which was reserved to process the notification, the system will try to re-deliver notifications until a successful response is received, or until a decision is made that it is impossible to deliver information. Delivery attempts will be made at the following time intervals between requests:
+    - 30 seconds, - 5 minutes, - 15 minutes, - 1 hour. - every hour within 24 hours
+    If the last attempt of notification delivery fails, all the events that have been accumulated in this wallet queue are discarded.
+    ## Received messages authorization
+    The system confirms notifications authenticity by signing messages with a private key that is unique to each webhook, the paired public key of which is contained in the data of that webhook. The signature is transmitted in the HTTP header Content-Signature. Represented in various atributes the header contains the information about the algorithm used to create a signature and content of the signature in the format [URL-safe base-64](https://tools.ietf.org/html/rfc4648).
+
+    ``` Content-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo... ```
+
+    At the moment the only one signature generation algorithm is possible to use.
+    ### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)
+    The signature is generated according to [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2) algorithm , which itself uses result of message [SHA-256](https://tools.ietf.org/html/rfc6234) calculation.
+
+    The set of header attributes and the list of possible signature generation algorithms can be expanded later.
+servers:
+  - 
+    url: "https://merchant.site"
+tags:
+  - 
+    name: Event Notifications
+    x-displayName: Notifications
+    description: Delivery of platform event notifications.
+paths:
+  "/webhook":
+    $ref: "./paths/webhook-url.yaml"
