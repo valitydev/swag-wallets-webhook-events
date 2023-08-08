@@ -1,4 +1,4 @@
-description: Смена статуса приемника на не авторизованный
+description: Changing the status of the destination receiver to unauthorized
 allOf:
   - 
     $ref: '../schemas/Event.yaml'
