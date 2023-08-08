@@ -19,7 +19,7 @@ info:
 
     Webhook is a subscription to a specific type of event or group of events
     relating to different objects within your organisation. API methods
-    described in the specification 
+    described in the specification
     [Vality Webhook Management API](https:/github.com/valitydev/swag-wallets)
     are used to manage webhooks.
 
