@@ -1,13 +1,13 @@
 post:
   tags:
     - Event Notifications
-  summary: Оповестить о событии
+  summary: Notify of an event
   operationId: notifyWebhookEvent
   parameters:
     - 
       $ref: '../components/parameters/signature.yaml'
   requestBody:
-    description: Данные произошедшего в платформе события
+    description: Data from an event that occurred in the platform
     required: true
     content:
       application/json:
@@ -15,4 +15,4 @@ post:
           $ref: '../components/schemas/Event.yaml'
   responses:
     '200':
-      description: Оповещение обработано
+      description: Notification processed
