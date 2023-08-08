@@ -31,9 +31,9 @@ properties:
 discriminator:
   propertyName: eventType
   mapping:
-    'WithdrawalStarted': '../schemas/WithdrawalStarted.yaml'
-    'WithdrawalSucceeded': '../schemas/WithdrawalSucceeded.yaml'
-    'WithdrawalFailed': '../schemas/WithdrawalFailed.yaml'
-    'DestinationCreated': '../schemas/DestinationCreated.yaml'
-    'DestinationAuthorized': '../schemas/DestinationAuthorized.yaml'
-    'DestinationUnauthorized': '../schemas/DestinationUnauthorized.yaml'
+    "WithdrawalStarted": "../schemas/WithdrawalStarted.yaml"
+    "WithdrawalSucceeded": "../schemas/WithdrawalSucceeded.yaml"
+    "WithdrawalFailed": "../schemas/WithdrawalFailed.yaml"
+    "DestinationCreated": "../schemas/DestinationCreated.yaml"
+    "DestinationAuthorized": "../schemas/DestinationAuthorized.yaml"
+    "DestinationUnauthorized": "../schemas/DestinationUnauthorized.yaml"
