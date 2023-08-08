@@ -1,4 +1,4 @@
-description: Данные события
+description: Event data
 type: object
 required:
   - occuredAt
@@ -6,21 +6,21 @@ required:
   - eventType
 properties:
   eventID:
-    description: Идентификатор события в системе
+    description: Event identifier
     type: string
   occuredAt:
-    description: Дата и время возникновения события
+    description: Date and time the event occurrence
     type: string
     format: date-time
   topic:
-    description: Предмет оповещения
+    description: Subject of notification
     type: string
     enum:
       - WithdrawalTopic
       - DestinationTopic
   eventType:
     type: string
-    description: Тип произошедшего с предметом оповещения события
+    description: Type of event that occurred
     enum:
       - WithdrawalStarted
       - WithdrawalSucceeded
@@ -28,13 +28,12 @@ properties:
       - DestinationCreated
       - DestinationAuthorized
       - DestinationUnauthorized
-
 discriminator:
   propertyName: eventType
   mapping:
-    'WithdrawalStarted': '../schemas/WithdrawalStarted.yaml'
-    'WithdrawalSucceeded': '../schemas/WithdrawalSucceeded.yaml'
-    'WithdrawalFailed': '../schemas/WithdrawalFailed.yaml'
-    'DestinationCreated': '../schemas/DestinationCreated.yaml'
-    'DestinationAuthorized': '../schemas/DestinationAuthorized.yaml'
-    'DestinationUnauthorized': '../schemas/DestinationUnauthorized.yaml'
+    "WithdrawalStarted": "../schemas/WithdrawalStarted.yaml"
+    "WithdrawalSucceeded": "../schemas/WithdrawalSucceeded.yaml"
+    "WithdrawalFailed": "../schemas/WithdrawalFailed.yaml"
+    "DestinationCreated": "../schemas/DestinationCreated.yaml"
+    "DestinationAuthorized": "../schemas/DestinationAuthorized.yaml"
+    "DestinationUnauthorized": "../schemas/DestinationUnauthorized.yaml"

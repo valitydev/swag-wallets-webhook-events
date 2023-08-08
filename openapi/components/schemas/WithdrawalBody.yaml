@@ -1,5 +1,5 @@
 description: |
-  Объём средств, которые необходимо вывести
+  Amount of funds to be withdrawn
 type: object
 required:
   - amount
@@ -7,9 +7,9 @@ required:
 properties:
   amount:
     description: |
-      Сумма денежных средств в минорных единицах, например, в копейках
+      The amount of money in minor units, for example, in cents
     type: integer
     format: int64
     example: 1430000
   currency:
-    $ref: '../schemas/CurrencyID.yaml'
+    $ref: "../schemas/CurrencyID.yaml"
