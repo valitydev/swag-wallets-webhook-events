@@ -1,11 +1,11 @@
 description: Destination creation event
 allOf:
   - 
-    $ref: '../schemas/Event.yaml'
+    $ref: "../schemas/Event.yaml"
   - 
     type: object
     required:
       - destination
     properties:
       destination:
-        $ref: '../schemas/Destination.yaml'
+        $ref: "../schemas/Destination.yaml"
