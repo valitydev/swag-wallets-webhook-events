@@ -54,7 +54,7 @@ tags:
   - 
     name: Event Notifications
     x-displayName: Notifications
-    description: Доставка оповещений о событиях системы.
+    description: Delivery of platform event notifications.
 paths:
   '/webhook':
     $ref: './paths/webhook-url.yaml'
