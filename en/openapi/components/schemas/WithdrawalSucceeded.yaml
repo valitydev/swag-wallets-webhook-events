@@ -1,4 +1,4 @@
-description: Событие об успешном осуществлении вывода средств
+description: Successful withdrawal event
 allOf:
   - 
     $ref: '../schemas/Event.yaml'
