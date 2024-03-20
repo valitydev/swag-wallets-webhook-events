@@ -2,7 +2,7 @@
   "name": "@vality/swag-wallets-webhook-events",
   "version": "0.1.1",
   "dependencies": {
-    "@redocly/openapi-cli": "1.0.0-beta.94",
+    "@redocly/openapi-cli": "1.0.0-beta.95",
     "json-merge-patch": "1.0.2",
     "redoc-cli": "0.13.21"
   },
