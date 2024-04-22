@@ -1,0 +1,19 @@
+description: Asset receiver resource used to make withdrawals
+type: object
+required:
+  - type
+properties:
+  type:
+    description: |
+      Destination resource type
+    type: string
+    enum:
+      - BankCard
+      - CryptoWallet
+      - DigitalWallet
+discriminator:
+  propertyName: type
+  mapping:
+    "BankCard": "../schemas/BankCard.yaml"
+    "CryptoWallet": "../schemas/CryptoWallet.yaml"
+    "DigitalWallet": "../schemas/DigitalWallet.yaml"

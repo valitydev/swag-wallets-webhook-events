@@ -1,0 +1,6 @@
+description: Payment token provider
+type: string
+enum:
+  - applepay
+  - googlepay
+  - samsungpay

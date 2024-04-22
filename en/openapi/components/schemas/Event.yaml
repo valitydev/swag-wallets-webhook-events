@@ -1,0 +1,39 @@
+description: Event data
+type: object
+required:
+  - occuredAt
+  - topic
+  - eventType
+properties:
+  eventID:
+    description: Event identifier
+    type: string
+  occuredAt:
+    description: Date and time the event occurrence
+    type: string
+    format: date-time
+  topic:
+    description: Subject of notification
+    type: string
+    enum:
+      - WithdrawalTopic
+      - DestinationTopic
+  eventType:
+    type: string
+    description: Type of event that occurred
+    enum:
+      - WithdrawalStarted
+      - WithdrawalSucceeded
+      - WithdrawalFailed
+      - DestinationCreated
+      - DestinationAuthorized
+      - DestinationUnauthorized
+discriminator:
+  propertyName: eventType
+  mapping:
+    "WithdrawalStarted": "../schemas/WithdrawalStarted.yaml"
+    "WithdrawalSucceeded": "../schemas/WithdrawalSucceeded.yaml"
+    "WithdrawalFailed": "../schemas/WithdrawalFailed.yaml"
+    "DestinationCreated": "../schemas/DestinationCreated.yaml"
+    "DestinationAuthorized": "../schemas/DestinationAuthorized.yaml"
+    "DestinationUnauthorized": "../schemas/DestinationUnauthorized.yaml"
