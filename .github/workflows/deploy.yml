@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    uses: valitydev/java-workflow/.github/workflows/maven-swag-deploy.yml@v3.1.0
+    uses: valitydev/java-workflow/.github/workflows/maven-swag-deploy.yml@v3
     with:
       dist-directory: ./dist
     secrets:
