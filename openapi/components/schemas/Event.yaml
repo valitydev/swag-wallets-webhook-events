@@ -20,17 +20,12 @@ properties:
       - DestinationTopic
   eventType:
     type: string
-    description: |
-      Type of event that occurred.
-      **Warning:** The values of `DestinationAuthorized` and `DestinationUnauthorized` are deprecated
-      and will delete in future release.
+    description: Type of event that occurred.
     enum:
       - WithdrawalStarted
       - WithdrawalSucceeded
       - WithdrawalFailed
       - DestinationCreated
-      - DestinationAuthorized
-      - DestinationUnauthorized
 discriminator:
   propertyName: eventType
   mapping:
@@ -38,5 +33,3 @@ discriminator:
     "WithdrawalSucceeded": "../schemas/WithdrawalSucceeded.yaml"
     "WithdrawalFailed": "../schemas/WithdrawalFailed.yaml"
     "DestinationCreated": "../schemas/DestinationCreated.yaml"
-    "DestinationAuthorized": "../schemas/DestinationAuthorized.yaml"
-    "DestinationUnauthorized": "../schemas/DestinationUnauthorized.yaml"
