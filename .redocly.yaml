@@ -17,4 +17,3 @@ apis:
           scope: section
         routingStrategy: browser
         htmlTemplate: ./web/index.html
-
