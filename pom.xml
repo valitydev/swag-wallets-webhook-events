@@ -154,7 +154,9 @@
                                         <delegatePattern>true</delegatePattern>
                                         <useBeanValidation>true</useBeanValidation>
                                         <useSpringBoot3>true</useSpringBoot3>
-                                        <annotationLibrary>jakarta</annotationLibrary>
+                                        <useJakartaEe>true</useJakartaEe>
+                                        <useSpringfox>false</useSpringfox>
+                                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                     </configOptions>
                                 </configuration>
                             </execution>
@@ -183,7 +185,9 @@
                                     <configOptions>
                                         <dateLibrary>java8</dateLibrary>
                                         <useSpringBoot3>true</useSpringBoot3>
-                                        <annotationLibrary>jakarta</annotationLibrary>
+                                        <useJakartaEe>true</useJakartaEe>
+                                        <useSpringfox>false</useSpringfox>
+                                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                     </configOptions>
                                     <library>resttemplate</library>
                                     <apiPackage>${default.package}.api</apiPackage>
