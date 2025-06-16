@@ -1,3 +1,6 @@
-description: Identifier of wallet owner
+description: |
+  Identifier of wallet owner. 
+  **Warning:** The values of `identity` is deprecated and will delete in future release. Use `party` instead
+deprecated: true
 type: string
 example: tZ0jUmlsV0

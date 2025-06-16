@@ -20,7 +20,9 @@ properties:
       - DestinationTopic
   eventType:
     type: string
-    description: Type of event that occurred
+    description: | 
+      Type of event that occurred.
+      **Warning:** The values of `DestinationAuthorized` and `DestinationUnauthorized` are deprecated and will delete in future release.
     enum:
       - WithdrawalStarted
       - WithdrawalSucceeded
