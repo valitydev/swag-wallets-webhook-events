@@ -2,7 +2,6 @@ description: Destination data
 type: object
 required:
   - name
-  - party
   - currency
   - resource
 properties:
@@ -15,6 +14,8 @@ properties:
     example: Squarey plastic thingy
   party:
     $ref: "../schemas/PartyID.yaml"
+  identity:
+    $ref: "../schemas/IdentityID.yaml"
   currency:
     $ref: "../schemas/CurrencyID.yaml"
   resource:
