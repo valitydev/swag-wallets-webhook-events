@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>swag-wallets-webhook-events</artifactId>
-    <version>SNAPSHOT</version>
+    <version>*-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>swag-wallets-webhook-events</name>

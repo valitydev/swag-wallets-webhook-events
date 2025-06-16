@@ -13,7 +13,6 @@ apis:
     theme:
       openapi:
         hideTryItPanel: false
-        layout:
-          scope: section
+        layout: three-panel
         routingStrategy: browser
         htmlTemplate: ./web/index.html
