@@ -9,7 +9,8 @@
   "scripts": {
     "start": "redocly preview-docs",
     "build": "redocly bundle openapi/openapi.yaml --output dist/openapi.json && openapi bundle openapi/openapi.yaml --output dist/openapi.yaml",
-    "redoc": "redoc-cli bundle openapi/openapi.yaml -o dist/index.html -t web/index.html",
+    "build-docs": "redocly build-docs -o dist/index.html",
+    "build-web": "npm run build && npm run build-docs",
     "validate": "redocly lint"
   }
 }
