@@ -30,9 +30,9 @@
         ],
         "summary": "Notify of an event",
         "operationId": "notifyWebhookEvent",
-        "parameters": [
+        "security": [
           {
-            "$ref": "#/components/parameters/signature"
+            "signature": []
           }
         ],
         "requestBody": {
@@ -55,15 +55,12 @@
     }
   },
   "components": {
-    "parameters": {
+    "securitySchemes": {
       "signature": {
+        "description": "Message signature formed according to the above rules.\n",
         "name": "Content-Signature",
-        "in": "header",
-        "description": "Message signature formed according to the above rules\n",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
+        "type": "apiKey",
+        "in": "header"
       }
     },
     "schemas": {
@@ -95,14 +92,12 @@
           },
           "eventType": {
             "type": "string",
-            "description": "Type of event that occurred",
+            "description": "Type of event that occurred.",
             "enum": [
               "WithdrawalStarted",
               "WithdrawalSucceeded",
               "WithdrawalFailed",
-              "DestinationCreated",
-              "DestinationAuthorized",
-              "DestinationUnauthorized"
+              "DestinationCreated"
             ]
           }
         },
@@ -112,9 +107,7 @@
             "WithdrawalStarted": "#/components/schemas/WithdrawalStarted",
             "WithdrawalSucceeded": "#/components/schemas/WithdrawalSucceeded",
             "WithdrawalFailed": "#/components/schemas/WithdrawalFailed",
-            "DestinationCreated": "#/components/schemas/DestinationCreated",
-            "DestinationAuthorized": "#/components/schemas/DestinationAuthorized",
-            "DestinationUnauthorized": "#/components/schemas/DestinationUnauthorized"
+            "DestinationCreated": "#/components/schemas/DestinationCreated"
           }
         }
       },
@@ -260,8 +253,8 @@
           }
         ]
       },
-      "IdentityID": {
-        "description": "Identifier of wallet owner",
+      "PartyID": {
+        "description": "Identifier of owner",
         "type": "string",
         "example": "tZ0jUmlsV0"
       },
@@ -415,7 +408,6 @@
         "type": "object",
         "required": [
           "name",
-          "identity",
           "currency",
           "resource"
         ],
@@ -428,8 +420,8 @@
             "type": "string",
             "example": "Squarey plastic thingy"
           },
-          "identity": {
-            "$ref": "#/components/schemas/IdentityID"
+          "party": {
+            "$ref": "#/components/schemas/PartyID"
           },
           "currency": {
             "$ref": "#/components/schemas/CurrencyID"
@@ -463,50 +455,6 @@
             "properties": {
               "destination": {
                 "$ref": "#/components/schemas/Destination"
-              }
-            }
-          }
-        ]
-      },
-      "DestinationAuthorized": {
-        "description": "Changing the status of the destination receiver to authorized",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Event"
-          },
-          {
-            "type": "object",
-            "required": [
-              "destinationID"
-            ],
-            "properties": {
-              "destinationID": {
-                "$ref": "#/components/schemas/DestinationID"
-              },
-              "externalID": {
-                "$ref": "#/components/schemas/ExternalID"
-              }
-            }
-          }
-        ]
-      },
-      "DestinationUnauthorized": {
-        "description": "Changing the status of the destination receiver to unauthorized",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Event"
-          },
-          {
-            "type": "object",
-            "required": [
-              "destinationID"
-            ],
-            "properties": {
-              "destinationID": {
-                "$ref": "#/components/schemas/DestinationID"
-              },
-              "externalID": {
-                "$ref": "#/components/schemas/ExternalID"
               }
             }
           }

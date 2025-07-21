@@ -6,46 +6,18 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  description: >
+  description: |
 
     ## Wallet Webhook Events API
+    The specification defines a protocol for delivering notifications about new wallet events within your organisation. The notifications are deliveried by the system as HTTP requests to the URL of webhooks you created. Handlers for such kind of queries should be implemented on the side of your server code according to the specification.
 
-    The specification defines a protocol for delivering notifications about new
-    wallet events within your organisation. The notifications are deliveried by
-    the system as HTTP requests to the URL of webhooks you created. Handlers for
-    such kind of queries should be implemented on the side of your server code
-    according to the specification.
+    Webhook is a subscription to a specific type of event or group of events relating to different objects within your organisation. API methods described in the specification [Vality Webhook Management API](https:/github.com/valitydev/swag-wallets) are used to manage webhooks.
 
-
-    Webhook is a subscription to a specific type of event or group of events
-    relating to different objects within your organisation. API methods
-    described in the specification [Vality Webhook Management
-    API](https:/github.com/valitydev/swag-wallets) are used to manage webhooks.
-
-
-    When within the wallet one of the events occurs (e.g. a wallet status
-    change), the system selects a webhook matching that event type and sends an
-    HTTP request containing a JSON message to the URL specified in the webhook.
-    If several webhooks matching this event type were created, the event is
-    simultaneously delivered to all URLs specified in those webhooks in an
-    undefined order.
-
+    When within the wallet one of the events occurs (e.g. a wallet status change), the system selects a webhook matching that event type and sends an HTTP request containing a JSON message to the URL specified in the webhook. If several webhooks matching this event type were created, the event is simultaneously delivered to all URLs specified in those webhooks in an undefined order.
     ## Delivery strategy
+    The system guarantees events delivery order within a specific notification subject (wallet, deposit, withdrawal, etc.). The system maintains a message queue for each notification item to keep the sequence and ensure the guaranteed delivery.
 
-    The system guarantees events delivery order within a specific notification
-    subject (wallet, deposit, withdrawal, etc.). The system maintains a message
-    queue for each notification item to keep the sequence and ensure the
-    guaranteed delivery.
-
-
-    A delivery request is considered to be successful only when a response with
-    status `200` is received. The system will wait for a successful response to
-    the sent a request during 10 seconds. In case of a response with any other
-    status or after expiration of the specified time which was reserved to
-    process the notification, the system will try to re-deliver notifications
-    until a successful response is received, or until a decision is made that it
-    is impossible to deliver information. Delivery attempts will be made at the
-    following time intervals between requests:
+    A delivery request is considered to be successful only when a response with status `200` is received. The system will wait for a successful response to the sent a request during 10 seconds. In case of a response with any other status or after expiration of the specified time which was reserved to process the notification, the system will try to re-deliver notifications until a successful response is received, or until a decision is made that it is impossible to deliver information. Delivery attempts will be made at the following time intervals between requests:
 
       - 30 seconds,
       - 5 minutes,
@@ -53,37 +25,17 @@ info:
       - 1 hour.
       - every hour within 24 hours
 
-    If the last attempt of notification delivery fails, all the events that have
-    been accumulated in this wallet queue are discarded.
-
+    If the last attempt of notification delivery fails, all the events that have been accumulated in this wallet queue are discarded.
     ## Received messages authorization
+    The system confirms notifications authenticity by signing messages with a private key that is unique to each webhook, the paired public key of which is contained in the data of that webhook. The signature is transmitted in the HTTP header Content-Signature. Represented in various atributes the header contains the information about the algorithm used to create a signature and content of the signature in the format [URL-safe base-64](https://tools.ietf.org/html/rfc4648).
 
-    The system confirms notifications authenticity by signing messages with a
-    private key that is unique to each webhook, the paired public key of which
-    is contained in the data of that webhook. The signature is transmitted in
-    the HTTP header Content-Signature. Represented in various atributes the
-    header contains the information about the algorithm used to create a
-    signature and content of the signature in the format [URL-safe
-    base-64](https://tools.ietf.org/html/rfc4648).
+    ``` Content-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo... ```
 
-
-    ``` Content-Signature: alg=RS256;
-    digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo... ```
-
-
-    At the moment the only one signature generation algorithm is possible to
-    use.
-
+    At the moment the only one signature generation algorithm is possible to use.
     ### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)
+    The signature is generated according to [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2) algorithm , which itself uses result of message [SHA-256](https://tools.ietf.org/html/rfc6234) calculation.
 
-    The signature is generated according to
-    [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2)
-    algorithm , which itself uses result of message
-    [SHA-256](https://tools.ietf.org/html/rfc6234) calculation.
-
-
-    The set of header attributes and the list of possible signature generation
-    algorithms can be expanded later.
+    The set of header attributes and the list of possible signature generation algorithms can be expanded later.
 servers:
   - url: https://merchant.site
 tags:
@@ -97,8 +49,8 @@ paths:
         - Event Notifications
       summary: Notify of an event
       operationId: notifyWebhookEvent
-      parameters:
-        - $ref: '#/components/parameters/signature'
+      security:
+        - signature: []
       requestBody:
         description: Data from an event that occurred in the platform
         required: true
@@ -110,15 +62,13 @@ paths:
         '200':
           description: Notification processed
 components:
-  parameters:
+  securitySchemes:
     signature:
-      name: Content-Signature
-      in: header
       description: |
-        Message signature formed according to the above rules
-      required: true
-      schema:
-        type: string
+        Message signature formed according to the above rules.
+      name: Content-Signature
+      type: apiKey
+      in: header
   schemas:
     Event:
       description: Event data
@@ -143,14 +93,12 @@ components:
             - DestinationTopic
         eventType:
           type: string
-          description: Type of event that occurred
+          description: Type of event that occurred.
           enum:
             - WithdrawalStarted
             - WithdrawalSucceeded
             - WithdrawalFailed
             - DestinationCreated
-            - DestinationAuthorized
-            - DestinationUnauthorized
       discriminator:
         propertyName: eventType
         mapping:
@@ -158,8 +106,6 @@ components:
           WithdrawalSucceeded: '#/components/schemas/WithdrawalSucceeded'
           WithdrawalFailed: '#/components/schemas/WithdrawalFailed'
           DestinationCreated: '#/components/schemas/DestinationCreated'
-          DestinationAuthorized: '#/components/schemas/DestinationAuthorized'
-          DestinationUnauthorized: '#/components/schemas/DestinationUnauthorized'
     WithdrawalID:
       description: Identifier of funds withdrawal
       type: string
@@ -169,9 +115,8 @@ components:
       type: string
       example: 10ASF74D98
     CurrencyID:
-      description: >
-        Currency, character code according to [ISO
-        4217](http://www.iso.org/iso/home/standards/currency_codes.htm).
+      description: |
+        Currency, character code according to [ISO 4217](http://www.iso.org/iso/home/standards/currency_codes.htm).
       type: string
       pattern: ^[A-Z]{3}$
       example: RUB
@@ -196,12 +141,10 @@ components:
       type: string
       example: '10068321'
     ExternalID:
-      description: >
+      description: |
         The unique identifier of the content on your side.
 
-
-        When specified, will be used to ensure idempotent processing of the
-        operation.
+        When specified, will be used to ensure idempotent processing of the operation.
       type: string
       example: '10036274'
     Withdrawal:
@@ -223,9 +166,8 @@ components:
         body:
           $ref: '#/components/schemas/WithdrawalBody'
         metadata:
-          description: >
-            A custom client-specific API and a data set that is not transparent
-            to the system, associated with this withdrawal
+          description: |
+            A custom client-specific API and a data set that is not transparent to the system, associated with this withdrawal
         wallet:
           $ref: '#/components/schemas/WalletID'
         externalID:
@@ -264,8 +206,8 @@ components:
               $ref: '#/components/schemas/WithdrawalID'
             externalID:
               $ref: '#/components/schemas/ExternalID'
-    IdentityID:
-      description: Identifier of wallet owner
+    PartyID:
+      description: Identifier of owner
       type: string
       example: tZ0jUmlsV0
     DestinationResource:
@@ -374,28 +316,25 @@ components:
       type: object
       required:
         - name
-        - identity
         - currency
         - resource
       properties:
         id:
           $ref: '#/components/schemas/DestinationID'
         name:
-          description: >
-            A human-readable name for the receiver by which it is easily
-            recognizable
+          description: |
+            A human-readable name for the receiver by which it is easily recognizable
           type: string
           example: Squarey plastic thingy
-        identity:
-          $ref: '#/components/schemas/IdentityID'
+        party:
+          $ref: '#/components/schemas/PartyID'
         currency:
           $ref: '#/components/schemas/CurrencyID'
         resource:
           $ref: '#/components/schemas/DestinationResource'
         metadata:
-          description: >
-            An arbitrary, client-specific API and non-transparent set of data
-            associated with given receiver
+          description: |
+            An arbitrary, client-specific API and non-transparent set of data associated with given receiver
           type: object
           example:
             color_hint: olive-green
@@ -411,27 +350,3 @@ components:
           properties:
             destination:
               $ref: '#/components/schemas/Destination'
-    DestinationAuthorized:
-      description: Changing the status of the destination receiver to authorized
-      allOf:
-        - $ref: '#/components/schemas/Event'
-        - type: object
-          required:
-            - destinationID
-          properties:
-            destinationID:
-              $ref: '#/components/schemas/DestinationID'
-            externalID:
-              $ref: '#/components/schemas/ExternalID'
-    DestinationUnauthorized:
-      description: Changing the status of the destination receiver to unauthorized
-      allOf:
-        - $ref: '#/components/schemas/Event'
-        - type: object
-          required:
-            - destinationID
-          properties:
-            destinationID:
-              $ref: '#/components/schemas/DestinationID'
-            externalID:
-              $ref: '#/components/schemas/ExternalID'
