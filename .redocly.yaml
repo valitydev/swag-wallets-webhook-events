@@ -1,17 +1,18 @@
 # See https://docs.redoc.ly/cli/configuration/ for more information.
-apiDefinitions:
-  core: 'openapi/openapi.yaml'
-lint:
-  extends:
-    - recommended
-  rules:
-    # NOTE
-    # We don't actually expect a backend receiving webhook events following
-    # this specification to respond with anything other than 200 OK.
-    operation-4xx-response: off
-referenceDocs:
-  showConsole: true
-  layout:
-    scope: section
-  routingStrategy: browser
-  htmlTemplate: ./web/index.html
+extends:
+  - recommended
+
+apis:
+  core@v2:
+    root: ./openapi/openapi.yaml
+    rules:
+      # NOTE
+      # We don't actually expect a backend receiving webhook events following
+      # this specification to respond with anything other than 200 OK.
+      operation-4xx-response: off
+    theme:
+      openapi:
+        hideTryItPanel: false
+        layout: three-panel
+        routingStrategy: browser
+        htmlTemplate: ./web/index.html

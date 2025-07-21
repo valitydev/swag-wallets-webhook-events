@@ -2,7 +2,6 @@ description: Destination data
 type: object
 required:
   - name
-  - identity
   - currency
   - resource
 properties:
@@ -13,8 +12,8 @@ properties:
       A human-readable name for the receiver by which it is easily recognizable
     type: string
     example: Squarey plastic thingy
-  identity:
-    $ref: "../schemas/IdentityID.yaml"
+  party:
+    $ref: "../schemas/PartyID.yaml"
   currency:
     $ref: "../schemas/CurrencyID.yaml"
   resource:
