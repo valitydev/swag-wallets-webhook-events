@@ -41,3 +41,11 @@ tags:
 paths:
   "/webhook":
     $ref: "./paths/webhook-url.yaml"
+components:
+  securitySchemes:
+    signature:
+      description: |
+        Message signature formed according to the above rules.
+      name: Content-Signature
+      type: apiKey
+      in: header
