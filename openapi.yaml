@@ -1,0 +1,352 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Vality Wallets. Webhooks Events API
+  termsOfService: https://vality.dev/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  description: |
+
+    ## Wallet Webhook Events API
+    The specification defines a protocol for delivering notifications about new wallet events within your organisation. The notifications are deliveried by the system as HTTP requests to the URL of webhooks you created. Handlers for such kind of queries should be implemented on the side of your server code according to the specification.
+
+    Webhook is a subscription to a specific type of event or group of events relating to different objects within your organisation. API methods described in the specification [Vality Webhook Management API](https:/github.com/valitydev/swag-wallets) are used to manage webhooks.
+
+    When within the wallet one of the events occurs (e.g. a wallet status change), the system selects a webhook matching that event type and sends an HTTP request containing a JSON message to the URL specified in the webhook. If several webhooks matching this event type were created, the event is simultaneously delivered to all URLs specified in those webhooks in an undefined order.
+    ## Delivery strategy
+    The system guarantees events delivery order within a specific notification subject (wallet, deposit, withdrawal, etc.). The system maintains a message queue for each notification item to keep the sequence and ensure the guaranteed delivery.
+
+    A delivery request is considered to be successful only when a response with status `200` is received. The system will wait for a successful response to the sent a request during 10 seconds. In case of a response with any other status or after expiration of the specified time which was reserved to process the notification, the system will try to re-deliver notifications until a successful response is received, or until a decision is made that it is impossible to deliver information. Delivery attempts will be made at the following time intervals between requests:
+
+      - 30 seconds,
+      - 5 minutes,
+      - 15 minutes,
+      - 1 hour.
+      - every hour within 24 hours
+
+    If the last attempt of notification delivery fails, all the events that have been accumulated in this wallet queue are discarded.
+    ## Received messages authorization
+    The system confirms notifications authenticity by signing messages with a private key that is unique to each webhook, the paired public key of which is contained in the data of that webhook. The signature is transmitted in the HTTP header Content-Signature. Represented in various atributes the header contains the information about the algorithm used to create a signature and content of the signature in the format [URL-safe base-64](https://tools.ietf.org/html/rfc4648).
+
+    ``` Content-Signature: alg=RS256; digest=zFuf7bRH4RHwyktaqHQwmX5rn3LfSb4dKo... ```
+
+    At the moment the only one signature generation algorithm is possible to use.
+    ### [RS256](https://tools.ietf.org/html/rfc7518#section-3.3)
+    The signature is generated according to [RSASSA-PKCS1-v1_5](https://tools.ietf.org/html/rfc3447#section-8.2) algorithm , which itself uses result of message [SHA-256](https://tools.ietf.org/html/rfc6234) calculation.
+
+    The set of header attributes and the list of possible signature generation algorithms can be expanded later.
+servers:
+  - url: https://merchant.site
+tags:
+  - name: Event Notifications
+    x-displayName: Notifications
+    description: Delivery of platform event notifications.
+paths:
+  /webhook:
+    post:
+      tags:
+        - Event Notifications
+      summary: Notify of an event
+      operationId: notifyWebhookEvent
+      security:
+        - signature: []
+      requestBody:
+        description: Data from an event that occurred in the platform
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '200':
+          description: Notification processed
+components:
+  securitySchemes:
+    signature:
+      description: |
+        Message signature formed according to the above rules.
+      name: Content-Signature
+      type: apiKey
+      in: header
+  schemas:
+    Event:
+      description: Event data
+      type: object
+      required:
+        - occuredAt
+        - topic
+        - eventType
+      properties:
+        eventID:
+          description: Event identifier
+          type: string
+        occuredAt:
+          description: Date and time the event occurrence
+          type: string
+          format: date-time
+        topic:
+          description: Subject of notification
+          type: string
+          enum:
+            - WithdrawalTopic
+            - DestinationTopic
+        eventType:
+          type: string
+          description: Type of event that occurred.
+          enum:
+            - WithdrawalStarted
+            - WithdrawalSucceeded
+            - WithdrawalFailed
+            - DestinationCreated
+      discriminator:
+        propertyName: eventType
+        mapping:
+          WithdrawalStarted: '#/components/schemas/WithdrawalStarted'
+          WithdrawalSucceeded: '#/components/schemas/WithdrawalSucceeded'
+          WithdrawalFailed: '#/components/schemas/WithdrawalFailed'
+          DestinationCreated: '#/components/schemas/DestinationCreated'
+    WithdrawalID:
+      description: Identifier of funds withdrawal
+      type: string
+      example: tZ0jUmlsV0
+    DestinationID:
+      description: Destination identifier
+      type: string
+      example: 10ASF74D98
+    CurrencyID:
+      description: |
+        Currency, character code according to [ISO 4217](http://www.iso.org/iso/home/standards/currency_codes.htm).
+      type: string
+      pattern: ^[A-Z]{3}$
+      example: RUB
+    WithdrawalBody:
+      description: |
+        Amount of funds to be withdrawn
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          description: |
+            The amount of money in minor units, for example, in cents
+          type: integer
+          format: int64
+          example: 1430000
+        currency:
+          $ref: '#/components/schemas/CurrencyID'
+    WalletID:
+      description: Identifier of the wallet
+      type: string
+      example: '10068321'
+    ExternalID:
+      description: |
+        The unique identifier of the content on your side.
+
+        When specified, will be used to ensure idempotent processing of the operation.
+      type: string
+      example: '10036274'
+    Withdrawal:
+      description: Funds withdrawal data
+      type: object
+      required:
+        - wallet
+        - destination
+        - body
+      properties:
+        id:
+          $ref: '#/components/schemas/WithdrawalID'
+        createdAt:
+          description: Date and time the withdrawal started
+          type: string
+          format: date-time
+        destination:
+          $ref: '#/components/schemas/DestinationID'
+        body:
+          $ref: '#/components/schemas/WithdrawalBody'
+        metadata:
+          description: |
+            A custom client-specific API and a data set that is not transparent to the system, associated with this withdrawal
+        wallet:
+          $ref: '#/components/schemas/WalletID'
+        externalID:
+          $ref: '#/components/schemas/ExternalID'
+    WithdrawalStarted:
+      description: Withdrawal start event
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawal
+          properties:
+            withdrawal:
+              $ref: '#/components/schemas/Withdrawal'
+    WithdrawalSucceeded:
+      description: Successful withdrawal event
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawalID
+          properties:
+            withdrawalID:
+              $ref: '#/components/schemas/WithdrawalID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'
+    WithdrawalFailed:
+      description: Unsuccessful withdrawal event
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawalID
+          properties:
+            withdrawalID:
+              $ref: '#/components/schemas/WithdrawalID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'
+    PartyID:
+      description: Identifier of owner
+      type: string
+      example: tZ0jUmlsV0
+    DestinationResource:
+      description: Asset receiver resource used to make withdrawals
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          description: |
+            Destination resource type
+          type: string
+          enum:
+            - BankCard
+            - CryptoWallet
+            - DigitalWallet
+      discriminator:
+        propertyName: type
+        mapping:
+          BankCard: '#/components/schemas/BankCard'
+          CryptoWallet: '#/components/schemas/CryptoWallet'
+          DigitalWallet: '#/components/schemas/DigitalWallet'
+    BankCardPaymentSystem:
+      description: Payment system
+      type: string
+    BankCardTokenProvider:
+      description: Payment token provider
+      type: string
+      enum:
+        - applepay
+        - googlepay
+        - samsungpay
+    BankCard:
+      description: Bank card details
+      allOf:
+        - $ref: '#/components/schemas/DestinationResource'
+        - type: object
+          required:
+            - cardNumberMask
+            - paymentSystem
+          properties:
+            cardNumberMask:
+              description: Masked card number
+              type: string
+              pattern: ^\d{6,8}\*+\d{2,4}$
+            bin:
+              description: Card issuing bank BIN
+              type: string
+              pattern: ^\d{6,8}$
+            lastDigits:
+              description: Card last digits
+              type: string
+              pattern: ^\d{2,4}$
+            paymentSystem:
+              $ref: '#/components/schemas/BankCardPaymentSystem'
+            tokenProvider:
+              $ref: '#/components/schemas/BankCardTokenProvider'
+    CryptoCurrency:
+      description: Cryptocurrency
+      type: string
+      enum:
+        - Bitcoin
+        - Litecoin
+        - BitcoinCash
+        - Ripple
+        - Ethereum
+        - Zcash
+    CryptoWallet:
+      description: Cryptocurrency wallet details
+      allOf:
+        - $ref: '#/components/schemas/DestinationResource'
+        - type: object
+          required:
+            - cryptoWalletId
+            - currency
+          properties:
+            cryptoWalletId:
+              description: Identifier (aka address) of a cryptocurrency wallet
+              type: string
+              minLength: 16
+              maxLength: 256
+              example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
+            currency:
+              $ref: '#/components/schemas/CryptoCurrency'
+    DigitalWallet:
+      description: Cryptocurrency wallet details
+      allOf:
+        - $ref: '#/components/schemas/DestinationResource'
+        - type: object
+          required:
+            - digitalWalletId
+            - digitalWalletProvider
+          properties:
+            digitalWalletId:
+              description: E-wallet identifier
+              type: string
+              minLength: 16
+              maxLength: 256
+              example: zu3TcwGI71Bpaaw2XkLWZXlhMdn4zpVzMQ
+            digitalWalletProvider:
+              description: Electronic assets service provider
+              type: string
+              example: Paypal
+    Destination:
+      description: Destination data
+      type: object
+      required:
+        - name
+        - currency
+        - resource
+      properties:
+        id:
+          $ref: '#/components/schemas/DestinationID'
+        name:
+          description: |
+            A human-readable name for the receiver by which it is easily recognizable
+          type: string
+          example: Squarey plastic thingy
+        party:
+          $ref: '#/components/schemas/PartyID'
+        currency:
+          $ref: '#/components/schemas/CurrencyID'
+        resource:
+          $ref: '#/components/schemas/DestinationResource'
+        metadata:
+          description: |
+            An arbitrary, client-specific API and non-transparent set of data associated with given receiver
+          type: object
+          example:
+            color_hint: olive-green
+        externalID:
+          $ref: '#/components/schemas/ExternalID'
+    DestinationCreated:
+      description: Destination creation event
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - destination
+          properties:
+            destination:
+              $ref: '#/components/schemas/Destination'
