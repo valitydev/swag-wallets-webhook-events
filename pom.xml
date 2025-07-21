@@ -10,7 +10,7 @@
         <version>3.0.1</version>
     </parent>
 
-    <artifactId>swag-wallets-webhook-events</artifactId>
+    <artifactId>${artifact.name}</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
@@ -19,6 +19,7 @@
     </description>
 
     <properties>
+        <artifact.name>swag-wallets-webhook-events</artifact.name>
         <default.package>dev.vality.swag.wallets.webhook.events</default.package>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
@@ -31,6 +32,8 @@
         <annotation-api-version>3.0.0</annotation-api-version>
         <jaxb-version>2.3.1</jaxb-version>
         <openapi-generator-version>7.13.0</openapi-generator-version>
+        <pubRepo>https://s01.oss.sonatype.org/content/repositories/releases</pubRepo>
+        <pubSnapRepo>https://s01.oss.sonatype.org/content/repositories/snapshots</pubSnapRepo>
     </properties>
 
     <dependencies>
@@ -128,6 +131,9 @@
     <profiles>
         <profile>
             <id>server</id>
+            <properties>
+                <artifact.name>swag-wallets-webhook-events-server</artifact.name>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -163,11 +169,32 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>1.7.1</version>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>flatten</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                            <flattenMode>oss</flattenMode>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
             <id>client</id>
+            <properties>
+                <artifact.name>swag-wallets-webhook-events-client</artifact.name>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -196,6 +223,24 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>flatten-maven-plugin</artifactId>
+                        <version>1.7.1</version>
+                        <executions>
+                            <execution>
+                                <id>flatten</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>flatten</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <updatePomFile>true</updatePomFile>
+                            <flattenMode>oss</flattenMode>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

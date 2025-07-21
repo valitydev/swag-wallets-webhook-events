@@ -41,3 +41,5 @@ node_modules
 swagger.json
 
 java/
+
+.flattened-pom.xml
