@@ -182,6 +182,20 @@ components:
           properties:
             withdrawal:
               $ref: '#/components/schemas/Withdrawal'
+    Fee:
+      description: Fee charged for the withdrawal
+      type: object
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          description: The amount of money in minor units, for example, in cents
+          type: integer
+          format: int64
+          example: 1430000
+        currency:
+          $ref: '#/components/schemas/CurrencyID'
     WithdrawalSucceeded:
       description: Successful withdrawal event
       allOf:
@@ -194,6 +208,8 @@ components:
               $ref: '#/components/schemas/WithdrawalID'
             externalID:
               $ref: '#/components/schemas/ExternalID'
+            fee:
+              $ref: '#/components/schemas/Fee'
     WithdrawalFailed:
       description: Unsuccessful withdrawal event
       allOf:
