@@ -11,3 +11,5 @@ allOf:
         $ref: "../schemas/WithdrawalID.yaml"
       externalID:
         $ref: "../schemas/ExternalID.yaml"
+      fee:
+        $ref: "../schemas/Fee.yaml"
