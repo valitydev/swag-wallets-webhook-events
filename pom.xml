@@ -28,7 +28,7 @@
         <junit-version>5.13.1</junit-version>
         <servlet-api-version>6.1.0</servlet-api-version>
         <jackson-version>2.19.0</jackson-version>
-        <spring-version>3.5.0</spring-version>
+        <spring-version>4.0.4</spring-version>
         <annotation-api-version>3.0.0</annotation-api-version>
         <jaxb-version>2.3.1</jaxb-version>
         <openapi-generator-version>7.13.0</openapi-generator-version>
