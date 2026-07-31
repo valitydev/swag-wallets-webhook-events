@@ -11,3 +11,5 @@ allOf:
         $ref: "../schemas/ExternalID.yaml"
       fee:
         $ref: "../schemas/Fee.yaml"
+      body:
+        $ref: "../schemas/WithdrawalBody.yaml"
