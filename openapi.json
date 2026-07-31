@@ -248,6 +248,9 @@
               },
               "fee": {
                 "$ref": "#/components/schemas/Fee"
+              },
+              "body": {
+                "$ref": "#/components/schemas/WithdrawalBody"
               }
             }
           }
