@@ -1,0 +1,13 @@
+description: Changing the status of the destination receiver to authorized
+allOf:
+  - 
+    $ref: "../schemas/Event.yaml"
+  - 
+    type: object
+    required:
+      - destinationID
+    properties:
+      destinationID:
+        $ref: "../schemas/DestinationID.yaml"
+      externalID:
+        $ref: "../schemas/ExternalID.yaml"
