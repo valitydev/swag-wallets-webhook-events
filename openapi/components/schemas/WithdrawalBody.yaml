@@ -13,7 +13,7 @@ properties:
     example: 1430000
   changedAmount:
     description: >
-      Changed payment amount on the provider side
+      Changed withdrawal amount on the provider side, in minor units
     type: integer
     format: int64
     example: 1430000
