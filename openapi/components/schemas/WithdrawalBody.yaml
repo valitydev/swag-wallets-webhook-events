@@ -11,5 +11,11 @@ properties:
     type: integer
     format: int64
     example: 1430000
+  changedAmount:
+    description: >
+      Changed withdrawal amount on the provider side, in minor units
+    type: integer
+    format: int64
+    example: 1430000
   currency:
     $ref: "../schemas/CurrencyID.yaml"
