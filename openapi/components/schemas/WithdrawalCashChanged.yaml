@@ -1,4 +1,4 @@
-description: Successful withdrawal event
+description: Withdrawal cash changed event
 allOf:
   - $ref: "../schemas/Event.yaml"
   - type: object
