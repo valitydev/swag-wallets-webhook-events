@@ -99,6 +99,7 @@ components:
             - WithdrawalSucceeded
             - WithdrawalFailed
             - DestinationCreated
+            - WithdrawalCashChanged
       discriminator:
         propertyName: eventType
         mapping:
@@ -106,6 +107,7 @@ components:
           WithdrawalSucceeded: '#/components/schemas/WithdrawalSucceeded'
           WithdrawalFailed: '#/components/schemas/WithdrawalFailed'
           DestinationCreated: '#/components/schemas/DestinationCreated'
+          WithdrawalCashChanged: '#/components/schemas/WithdrawalCashChanged'
     WithdrawalID:
       description: Identifier of funds withdrawal
       type: string
@@ -374,3 +376,19 @@ components:
           properties:
             destination:
               $ref: '#/components/schemas/Destination'
+    WithdrawalCashChanged:
+      description: Withdrawal cash changed event
+      allOf:
+        - $ref: '#/components/schemas/Event'
+        - type: object
+          required:
+            - withdrawalID
+          properties:
+            withdrawalID:
+              $ref: '#/components/schemas/WithdrawalID'
+            externalID:
+              $ref: '#/components/schemas/ExternalID'
+            fee:
+              $ref: '#/components/schemas/Fee'
+            body:
+              $ref: '#/components/schemas/WithdrawalBody'
