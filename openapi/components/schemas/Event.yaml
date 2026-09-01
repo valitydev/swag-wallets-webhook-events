@@ -26,6 +26,7 @@ properties:
       - WithdrawalSucceeded
       - WithdrawalFailed
       - DestinationCreated
+      - WithdrawalCashChanged
 discriminator:
   propertyName: eventType
   mapping:
@@ -33,3 +34,4 @@ discriminator:
     "WithdrawalSucceeded": "../schemas/WithdrawalSucceeded.yaml"
     "WithdrawalFailed": "../schemas/WithdrawalFailed.yaml"
     "DestinationCreated": "../schemas/DestinationCreated.yaml"
+    "WithdrawalCashChanged": "../schemas/WithdrawalCashChanged.yaml"
