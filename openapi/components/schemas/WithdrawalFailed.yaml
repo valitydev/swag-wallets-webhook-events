@@ -9,3 +9,5 @@ allOf:
         $ref: "../schemas/WithdrawalID.yaml"
       externalID:
         $ref: "../schemas/ExternalID.yaml"
+      error:
+        $ref: "../schemas/WithdrawalError.yaml"
