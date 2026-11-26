@@ -220,6 +220,33 @@ components:
               $ref: '#/components/schemas/Fee'
             body:
               $ref: '#/components/schemas/WithdrawalBody'
+    SubError:
+      description: Detailed description of the error
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          description: Details of the error code
+          type: string
+        subError:
+          $ref: '#/components/schemas/SubError'
+    WithdrawalError:
+      description: Error that occurred during the withdrawal process
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          description: Basic error code
+          type: string
+        message:
+          description: |
+            **Deprecated.** _Use `subError` to detail the error description._ Error description
+          type: string
+        subError:
+          $ref: '#/components/schemas/SubError'
     WithdrawalFailed:
       description: Unsuccessful withdrawal event
       allOf:
@@ -232,6 +259,8 @@ components:
               $ref: '#/components/schemas/WithdrawalID'
             externalID:
               $ref: '#/components/schemas/ExternalID'
+            error:
+              $ref: '#/components/schemas/WithdrawalError'
     PartyID:
       description: Identifier of owner
       type: string
